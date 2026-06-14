@@ -1,22 +1,28 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Discord Moderation Bot Admin Dashboard API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: auth
+    description: Discord OAuth authentication
+  - name: guilds
+    description: Guild management
+  - name: config
+    description: Bot configuration per guild
+  - name: stats
+    description: Guild statistics
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +30,249 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current authenticated user
+      responses:
+        "200":
+          description: Authenticated user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuthUser"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /auth/logout:
+    post:
+      operationId: logout
+      tags: [auth]
+      summary: Log out the current user
+      responses:
+        "200":
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+
+  /guilds:
+    get:
+      operationId: listGuilds
+      tags: [guilds]
+      summary: List guilds the user manages that have the bot
+      responses:
+        "200":
+          description: List of guilds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Guild"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /guilds/{guildId}:
+    get:
+      operationId: getGuild
+      tags: [guilds]
+      summary: Get a specific guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Guild details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuildDetail"
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /guilds/{guildId}/channels:
+    get:
+      operationId: listGuildChannels
+      tags: [guilds]
+      summary: List text channels in a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Channel"
+
+  /guilds/{guildId}/config:
+    get:
+      operationId: getGuildConfig
+      tags: [config]
+      summary: Get bot configuration for a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Guild bot config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuildConfig"
+    put:
+      operationId: updateGuildConfig
+      tags: [config]
+      summary: Update bot configuration for a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/GuildConfigInput"
+      responses:
+        "200":
+          description: Updated config
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuildConfig"
+
+  /guilds/{guildId}/stats:
+    get:
+      operationId: getGuildStats
+      tags: [stats]
+      summary: Get overview stats for a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Guild stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuildStats"
+
+  /guilds/{guildId}/stats/members:
+    get:
+      operationId: getGuildMemberHistory
+      tags: [stats]
+      summary: Get member join/leave history for graphing (last 30 days)
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Member history data points
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MemberHistoryPoint"
+
+  /guilds/{guildId}/stats/messages:
+    get:
+      operationId: getGuildMessageHistory
+      tags: [stats]
+      summary: Get message count history excluding bots (last 7 days)
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Message history data points
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MessageHistoryPoint"
+
+  /guilds/{guildId}/logs:
+    get:
+      operationId: listGuildLogs
+      tags: [guilds]
+      summary: Get recent audit log entries for a guild (last 50)
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogEntry"
+
+  /bot/invite:
+    get:
+      operationId: getBotInvite
+      tags: [guilds]
+      summary: Get the bot invite URL
+      responses:
+        "200":
+          description: Invite URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BotInvite"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +283,247 @@ components:
       required:
         - status
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+
+    AuthUser:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        discriminator:
+          type: string
+        avatar:
+          type: ["string", "null"]
+        avatarUrl:
+          type: string
+      required:
+        - id
+        - username
+        - discriminator
+        - avatarUrl
+
+    Guild:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: ["string", "null"]
+        iconUrl:
+          type: ["string", "null"]
+        memberCount:
+          type: integer
+        botPresent:
+          type: boolean
+      required:
+        - id
+        - name
+        - memberCount
+        - botPresent
+
+    GuildDetail:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: ["string", "null"]
+        iconUrl:
+          type: ["string", "null"]
+        memberCount:
+          type: integer
+        description:
+          type: ["string", "null"]
+      required:
+        - id
+        - name
+        - memberCount
+
+    Channel:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: integer
+      required:
+        - id
+        - name
+        - type
+
+    GuildConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        defaultLogChannel:
+          type: ["string", "null"]
+        logChannels:
+          $ref: "#/components/schemas/LogChannelMap"
+        updatedAt:
+          type: string
+      required:
+        - guildId
+        - logChannels
+
+    GuildConfigInput:
+      type: object
+      properties:
+        defaultLogChannel:
+          type: ["string", "null"]
+        logChannels:
+          $ref: "#/components/schemas/LogChannelMap"
+
+    LogChannelMap:
+      type: object
+      properties:
+        member_ban:
+          type: ["string", "null"]
+        member_unban:
+          type: ["string", "null"]
+        member_timeout_add:
+          type: ["string", "null"]
+        member_timeout_remove:
+          type: ["string", "null"]
+        member_kick:
+          type: ["string", "null"]
+        member_join:
+          type: ["string", "null"]
+        member_leave:
+          type: ["string", "null"]
+        member_nickname_change:
+          type: ["string", "null"]
+        member_role_add:
+          type: ["string", "null"]
+        member_role_remove:
+          type: ["string", "null"]
+        member_voice_move:
+          type: ["string", "null"]
+        member_voice_disconnect:
+          type: ["string", "null"]
+        message_delete:
+          type: ["string", "null"]
+        message_edit:
+          type: ["string", "null"]
+        role_create:
+          type: ["string", "null"]
+        role_delete:
+          type: ["string", "null"]
+        role_update:
+          type: ["string", "null"]
+        channel_update:
+          type: ["string", "null"]
+        channel_permissions_update:
+          type: ["string", "null"]
+        invite_create:
+          type: ["string", "null"]
+        command_used:
+          type: ["string", "null"]
+        server_update:
+          type: ["string", "null"]
+
+    GuildStats:
+      type: object
+      properties:
+        guildId:
+          type: string
+        totalMembers:
+          type: integer
+        membersJoinedLast24h:
+          type: integer
+        membersLeftLast24h:
+          type: integer
+        messagesLast24h:
+          type: integer
+        onlineMembers:
+          type: ["integer", "null"]
+      required:
+        - guildId
+        - totalMembers
+        - membersJoinedLast24h
+        - membersLeftLast24h
+        - messagesLast24h
+
+    MemberHistoryPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        joins:
+          type: integer
+        leaves:
+          type: integer
+        total:
+          type: integer
+      required:
+        - date
+        - joins
+        - leaves
+        - total
+
+    MessageHistoryPoint:
+      type: object
+      properties:
+        date:
+          type: string
+        count:
+          type: integer
+      required:
+        - date
+        - count
+
+    LogEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        guildId:
+          type: string
+        eventType:
+          type: string
+        userId:
+          type: ["string", "null"]
+        targetId:
+          type: ["string", "null"]
+        description:
+          type: string
+        metadata:
+          type: object
+        createdAt:
+          type: string
+      required:
+        - id
+        - guildId
+        - eventType
+        - description
+        - createdAt
+
+    BotInvite:
+      type: object
+      properties:
+        url:
+          type: string
+      required:
+        - url

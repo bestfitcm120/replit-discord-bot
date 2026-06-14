@@ -1,0 +1,51 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Discord Moderation Bot — Docker image
+#
+# Build:
+#   docker build -f Dockerfile.bot -t modbot:latest .
+#
+# Run:
+#   docker run --env-file .env modbot:latest
+#
+# Required environment variables (see docs/USAGE.md):
+#   DISCORD_TOKEN, DATABASE_URL
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Stage 1: base ─────────────────────────────────────────────────────────────
+FROM python:3.12-slim AS base
+
+WORKDIR /app
+
+# Install system deps (gcc needed for some asyncpg wheels)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gcc \
+        libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Stage 2: dependencies ─────────────────────────────────────────────────────
+FROM base AS deps
+
+COPY bot/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ── Stage 3: final ────────────────────────────────────────────────────────────
+FROM python:3.12-slim AS final
+
+WORKDIR /app
+
+# Copy installed packages from deps stage
+COPY --from=deps /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=deps /usr/local/bin /usr/local/bin
+
+# Copy source
+COPY bot/ /app/bot/
+
+# Create non-root user
+RUN groupadd -r botuser && useradd -r -g botuser botuser
+USER botuser
+
+# Health check — verifies the process is running
+HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
+    CMD pgrep -f "python -m bot.main" || exit 1
+
+CMD ["python", "-m", "bot.main"]

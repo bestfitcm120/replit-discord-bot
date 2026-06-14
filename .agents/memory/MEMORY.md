@@ -1,0 +1,1 @@
+- [Discord OAuth session pattern](discord-oauth-session.md) — HMAC-signed cookie sessions; queryKey required in all generated React Query hooks

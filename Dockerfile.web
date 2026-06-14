@@ -1,0 +1,75 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# Discord Moderation Bot — Web / Admin Dashboard image
+#
+# This image contains:
+#   • Python FastAPI backend  (handles Discord OAuth + admin API)
+#   • Pre-built React static files  (served by FastAPI)
+#
+# Build:
+#   docker build -f Dockerfile.web -t modbot-web:latest .
+#
+# Run:
+#   docker run -p 8000:8000 --env-file .env modbot-web:latest
+#
+# Required environment variables (see docs/USAGE.md):
+#   DATABASE_URL, DISCORD_CLIENT_ID, DISCORD_CLIENT_SECRET,
+#   DISCORD_BOT_TOKEN, SESSION_SECRET, BASE_URL
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── Stage 1: build React frontend ─────────────────────────────────────────────
+FROM node:22-slim AS frontend-build
+
+WORKDIR /frontend
+
+# Install pnpm
+RUN corepack enable && corepack prepare pnpm@latest --activate
+
+# Copy workspace files for pnpm install
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY tsconfig.base.json tsconfig.json ./
+COPY lib/ ./lib/
+COPY artifacts/dashboard/ ./artifacts/dashboard/
+
+RUN pnpm install --frozen-lockfile
+
+# Build the React app
+RUN pnpm --filter @workspace/dashboard run build
+
+# ── Stage 2: Python deps ───────────────────────────────────────────────────────
+FROM python:3.12-slim AS python-deps
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        gcc \
+        libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY web/requirements.txt /app/requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
+
+# ── Stage 3: final ────────────────────────────────────────────────────────────
+FROM python:3.12-slim AS final
+
+WORKDIR /app
+
+# Copy Python packages
+COPY --from=python-deps /usr/local/lib/python3.12 /usr/local/lib/python3.12
+COPY --from=python-deps /usr/local/bin /usr/local/bin
+
+# Copy backend source
+COPY web/ /app/web/
+
+# Copy built React files into /app/dist (FastAPI serves these as static files)
+COPY --from=frontend-build /frontend/artifacts/dashboard/dist /app/dist
+
+# Non-root user
+RUN groupadd -r webuser && useradd -r -g webuser webuser
+USER webuser
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
+    CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/healthz')" || exit 1
+
+CMD ["python", "-m", "uvicorn", "web.main:app", "--host", "0.0.0.0", "--port", "8000"]

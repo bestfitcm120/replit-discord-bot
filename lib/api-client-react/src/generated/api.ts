@@ -30,6 +30,7 @@ import type {
   GuildDetail,
   GuildStats,
   HealthStatus,
+  ListGuildModerationParams,
   LogEntry,
   MemberHistoryPoint,
   MessageHistoryPoint,
@@ -948,6 +949,177 @@ export function useListGuildLogs<TData = Awaited<ReturnType<typeof listGuildLogs
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListGuildLogsQueryOptions(guildId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListGuildModerationUrl = (guildId: string,
+    params?: ListGuildModerationParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/guilds/${guildId}/moderation?${stringifiedParams}` : `/api/guilds/${guildId}/moderation`
+}
+
+/**
+ * @summary Get moderation action history for a guild (bans, kicks, timeouts, warns)
+ */
+export const listGuildModeration = async (guildId: string,
+    params?: ListGuildModerationParams, options?: RequestInit): Promise<LogEntry[]> => {
+
+  return customFetch<LogEntry[]>(getListGuildModerationUrl(guildId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListGuildModerationQueryKey = (guildId: string,
+    params?: ListGuildModerationParams,) => {
+    return [
+    `/api/guilds/${guildId}/moderation`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getListGuildModerationQueryOptions = <TData = Awaited<ReturnType<typeof listGuildModeration>>, TError = ErrorType<unknown>>(guildId: string,
+    params?: ListGuildModerationParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGuildModeration>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListGuildModerationQueryKey(guildId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGuildModeration>>> = ({ signal }) => listGuildModeration(guildId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(guildId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listGuildModeration>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListGuildModerationQueryResult = NonNullable<Awaited<ReturnType<typeof listGuildModeration>>>
+export type ListGuildModerationQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get moderation action history for a guild (bans, kicks, timeouts, warns)
+ */
+
+export function useListGuildModeration<TData = Awaited<ReturnType<typeof listGuildModeration>>, TError = ErrorType<unknown>>(
+ guildId: string,
+    params?: ListGuildModerationParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGuildModeration>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListGuildModerationQueryOptions(guildId,params,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getListUserWarningsUrl = (guildId: string,
+    userId: string,) => {
+
+
+
+
+  return `/api/guilds/${guildId}/warnings/${userId}`
+}
+
+/**
+ * @summary Get all warnings for a specific user in a guild
+ */
+export const listUserWarnings = async (guildId: string,
+    userId: string, options?: RequestInit): Promise<LogEntry[]> => {
+
+  return customFetch<LogEntry[]>(getListUserWarningsUrl(guildId,userId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListUserWarningsQueryKey = (guildId: string,
+    userId: string,) => {
+    return [
+    `/api/guilds/${guildId}/warnings/${userId}`
+    ] as const;
+    }
+
+
+export const getListUserWarningsQueryOptions = <TData = Awaited<ReturnType<typeof listUserWarnings>>, TError = ErrorType<unknown>>(guildId: string,
+    userId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listUserWarnings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListUserWarningsQueryKey(guildId,userId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listUserWarnings>>> = ({ signal }) => listUserWarnings(guildId,userId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(guildId && userId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listUserWarnings>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type ListUserWarningsQueryResult = NonNullable<Awaited<ReturnType<typeof listUserWarnings>>>
+export type ListUserWarningsQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get all warnings for a specific user in a guild
+ */
+
+export function useListUserWarnings<TData = Awaited<ReturnType<typeof listUserWarnings>>, TError = ErrorType<unknown>>(
+ guildId: string,
+    userId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listUserWarnings>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getListUserWarningsQueryOptions(guildId,userId,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

@@ -51,6 +51,20 @@ function unauth(res: Response): void {
   res.status(401).json({ error: "Not authenticated" });
 }
 
+type LogEntryRow = typeof logEntries.$inferSelect;
+function serializeEntry(e: LogEntryRow) {
+  return {
+    id: e.id,
+    guildId: e.guildId,
+    eventType: e.eventType,
+    userId: e.userId,
+    targetId: e.targetId,
+    description: e.description,
+    metadata: e.metadata,
+    createdAt: e.createdAt?.toISOString() ?? null,
+  };
+}
+
 // GET /api/guilds
 router.get("/", async (req: Request, res: Response) => {
   const session = getSession(req);
@@ -247,16 +261,53 @@ router.get("/:guildId/logs", async (req: Request, res: Response) => {
     .orderBy(desc(logEntries.createdAt))
     .limit(50);
 
-  res.json(entries.map((e) => ({
-    id: e.id,
-    guildId: e.guildId,
-    eventType: e.eventType,
-    userId: e.userId,
-    targetId: e.targetId,
-    description: e.description,
-    metadata: e.metadata,
-    createdAt: e.createdAt?.toISOString(),
-  })));
+  res.json(entries.map(serializeEntry));
+});
+
+// GET /api/guilds/:guildId/moderation
+router.get("/:guildId/moderation", async (req: Request, res: Response) => {
+  const session = getSession(req);
+  if (!session) { unauth(res); return; }
+
+  const gId = getId(req);
+  const filterUserId = typeof req.query["userId"] === "string" ? req.query["userId"] : null;
+
+  const MOD_EVENTS = [
+    "member_ban", "member_unban", "member_kick",
+    "member_timeout_add", "member_timeout_remove", "member_warn",
+  ];
+
+  const conditions = [
+    eq(logEntries.guildId, gId),
+    sql`${logEntries.eventType} = ANY(${MOD_EVENTS})`,
+    ...(filterUserId ? [eq(logEntries.targetId, filterUserId)] : []),
+  ];
+
+  const entries = await db.select().from(logEntries)
+    .where(and(...conditions))
+    .orderBy(desc(logEntries.createdAt))
+    .limit(100);
+
+  res.json(entries.map(serializeEntry));
+});
+
+// GET /api/guilds/:guildId/warnings/:userId
+router.get("/:guildId/warnings/:userId", async (req: Request, res: Response) => {
+  const session = getSession(req);
+  if (!session) { unauth(res); return; }
+
+  const gId = getId(req);
+  const userId = String(req.params["userId"]);
+
+  const entries = await db.select().from(logEntries)
+    .where(and(
+      eq(logEntries.guildId, gId),
+      eq(logEntries.eventType, "member_warn"),
+      eq(logEntries.targetId, userId),
+    ))
+    .orderBy(desc(logEntries.createdAt));
+
+  res.json(entries.map(serializeEntry));
 });
 
 export default router;

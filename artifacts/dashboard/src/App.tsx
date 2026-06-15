@@ -7,6 +7,7 @@ import LandingPage from "@/pages/landing";
 import ServerList from "@/pages/server-list";
 import ServerOverview from "@/pages/server-overview";
 import ServerSettings from "@/pages/server-settings";
+import ServerModeration from "@/pages/server-moderation";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient({
@@ -32,6 +33,7 @@ function Router() {
       <Route path="/servers" component={ServerList} />
       <Route path="/servers/:guildId" component={ServerOverview} />
       <Route path="/servers/:guildId/settings" component={ServerSettings} />
+      <Route path="/servers/:guildId/moderation" component={ServerModeration} />
       <Route component={NotFound} />
     </Switch>
   );

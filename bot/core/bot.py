@@ -33,6 +33,7 @@ class ModerationBot(commands.Bot):
     async def _load_features(self) -> None:
         extensions = [
             "bot.features.logging.cog",
+            "bot.features.moderation.cog",
         ]
         for ext in extensions:
             try:

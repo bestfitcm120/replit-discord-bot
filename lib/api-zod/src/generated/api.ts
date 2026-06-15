@@ -114,7 +114,8 @@ export const GetGuildConfigResponse = zod.object({
   "channel_permissions_update": zod.string().nullish(),
   "invite_create": zod.string().nullish(),
   "command_used": zod.string().nullish(),
-  "server_update": zod.string().nullish()
+  "server_update": zod.string().nullish(),
+  "member_warn": zod.string().nullish()
 }),
   "updatedAt": zod.string().optional()
 })
@@ -151,7 +152,8 @@ export const UpdateGuildConfigBody = zod.object({
   "channel_permissions_update": zod.string().nullish(),
   "invite_create": zod.string().nullish(),
   "command_used": zod.string().nullish(),
-  "server_update": zod.string().nullish()
+  "server_update": zod.string().nullish(),
+  "member_warn": zod.string().nullish()
 }).optional()
 })
 
@@ -180,7 +182,8 @@ export const UpdateGuildConfigResponse = zod.object({
   "channel_permissions_update": zod.string().nullish(),
   "invite_create": zod.string().nullish(),
   "command_used": zod.string().nullish(),
-  "server_update": zod.string().nullish()
+  "server_update": zod.string().nullish(),
+  "member_warn": zod.string().nullish()
 }),
   "updatedAt": zod.string().optional()
 })
@@ -253,6 +256,55 @@ export const ListGuildLogsResponseItem = zod.object({
   "createdAt": zod.string()
 })
 export const ListGuildLogsResponse = zod.array(ListGuildLogsResponseItem)
+
+
+/**
+ * @summary Get moderation action history for a guild (bans, kicks, timeouts, warns)
+ */
+export const ListGuildModerationParams = zod.object({
+  "guildId": zod.coerce.string()
+})
+
+export const ListGuildModerationQueryParams = zod.object({
+  "userId": zod.coerce.string().optional().describe('Filter actions targeting a specific user ID')
+})
+
+export const ListGuildModerationResponseItem = zod.object({
+  "id": zod.number(),
+  "guildId": zod.string(),
+  "eventType": zod.string(),
+  "userId": zod.string().nullish(),
+  "targetId": zod.string().nullish(),
+  "description": zod.string(),
+  "metadata": zod.object({
+
+}).passthrough().optional(),
+  "createdAt": zod.string()
+})
+export const ListGuildModerationResponse = zod.array(ListGuildModerationResponseItem)
+
+
+/**
+ * @summary Get all warnings for a specific user in a guild
+ */
+export const ListUserWarningsParams = zod.object({
+  "guildId": zod.coerce.string(),
+  "userId": zod.coerce.string()
+})
+
+export const ListUserWarningsResponseItem = zod.object({
+  "id": zod.number(),
+  "guildId": zod.string(),
+  "eventType": zod.string(),
+  "userId": zod.string().nullish(),
+  "targetId": zod.string().nullish(),
+  "description": zod.string(),
+  "metadata": zod.object({
+
+}).passthrough().optional(),
+  "createdAt": zod.string()
+})
+export const ListUserWarningsResponse = zod.array(ListUserWarningsResponseItem)
 
 
 /**

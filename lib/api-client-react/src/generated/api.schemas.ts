@@ -100,6 +100,8 @@ export interface LogChannelMap {
   command_used?: string | null;
   /** @nullable */
   server_update?: string | null;
+  /** @nullable */
+  member_warn?: string | null;
 }
 
 export interface GuildConfig {
@@ -156,4 +158,11 @@ export interface LogEntry {
 export interface BotInvite {
   url: string;
 }
+
+export type ListGuildModerationParams = {
+/**
+ * Filter actions targeting a specific user ID
+ */
+userId?: string;
+};
 

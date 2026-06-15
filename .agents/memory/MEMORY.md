@@ -1,1 +1,2 @@
 - [Discord OAuth session pattern](discord-oauth-session.md) — HMAC-signed cookie sessions; queryKey required in all generated React Query hooks
+- [Orval Zod codegen collision fix](orval-zod-collision.md) — removing `schemas` from Orval Zod config prevents duplicate TS type/Zod value name collisions

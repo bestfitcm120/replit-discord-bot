@@ -260,6 +260,59 @@ paths:
                 items:
                   $ref: "#/components/schemas/LogEntry"
 
+  /guilds/{guildId}/moderation:
+    get:
+      operationId: listGuildModeration
+      tags: [guilds]
+      summary: Get moderation action history for a guild (bans, kicks, timeouts, warns)
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: string
+          description: Filter actions targeting a specific user ID
+      responses:
+        "200":
+          description: List of moderation log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogEntry"
+
+  /guilds/{guildId}/warnings/{userId}:
+    get:
+      operationId: listUserWarnings
+      tags: [guilds]
+      summary: Get all warnings for a specific user in a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: userId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of warning log entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LogEntry"
+
   /bot/invite:
     get:
       operationId: getBotInvite
@@ -442,6 +495,8 @@ components:
         command_used:
           type: ["string", "null"]
         server_update:
+          type: ["string", "null"]
+        member_warn:
           type: ["string", "null"]
 
     GuildStats:

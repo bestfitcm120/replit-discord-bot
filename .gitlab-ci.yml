@@ -4,9 +4,8 @@
 # See docs/PIPELINE.md for a full explanation of every stage and variable.
 #
 # Triggers:
-#   • Tag push (v*) → build both images, publish to the GitLab Container Registry
-#                      with the tag version AND 'latest'
-#   • Merge to main  → build-only (no push) to verify the images compile
+#   • Tag push matching v* → builds both images and publishes them to the
+#     GitLab Container Registry tagged with the version (e.g. v1.2.3) AND latest.
 #
 # Runner setup: Docker executor with socket binding (no dind).
 # In your runner config.toml ensure:
@@ -16,129 +15,93 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 stages:
-  - build
   - publish
-  - retag
+  - cleanup
 
 # ── Global variables ───────────────────────────────────────────────────────────
 variables:
   BOT_IMAGE:    "$CI_REGISTRY_IMAGE/bot"
   WEB_IMAGE:    "$CI_REGISTRY_IMAGE/web"
   DOCKER_DRIVER: overlay2
-  # Use the host Docker daemon via the bind-mounted socket.
-  # No dind service needed — avoids the /var/run/docker.sock conflict.
   DOCKER_HOST:  "unix:///var/run/docker.sock"
 
-# ── Templates ──────────────────────────────────────────────────────────────────
-
+# ── Shared template ────────────────────────────────────────────────────────────
 .docker_job: &docker_job
   image: docker:27
-  # No services: docker:dind — we use socket binding instead
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v/'
 
-# ── Build stage (always runs) ──────────────────────────────────────────────────
+# ── Publish stage ──────────────────────────────────────────────────────────────
+# Each job: build → tag with version + latest → push both.
+# Uses the existing 'latest' image as a cache layer to speed up builds.
 
-build:bot:
-  stage: build
+publish:bot:
+  stage: publish
   <<: *docker_job
   script:
-    # Pull the previous image for layer caching (fail silently if none exists)
     - docker pull "$BOT_IMAGE:latest" || true
     - docker build
         --cache-from "$BOT_IMAGE:latest"
         --file Dockerfile.bot
-        --tag "$BOT_IMAGE:build-$CI_PIPELINE_IID"
+        --tag "$BOT_IMAGE:$CI_COMMIT_TAG"
+        --tag "$BOT_IMAGE:latest"
         .
-    # Push the ephemeral build image so the publish job can pull it
-    - docker push "$BOT_IMAGE:build-$CI_PIPELINE_IID"
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v/'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
+    - docker push "$BOT_IMAGE:$CI_COMMIT_TAG"
+    - docker push "$BOT_IMAGE:latest"
 
-build:web:
-  stage: build
+publish:web:
+  stage: publish
   <<: *docker_job
   script:
     - docker pull "$WEB_IMAGE:latest" || true
     - docker build
         --cache-from "$WEB_IMAGE:latest"
         --file Dockerfile.web
-        --tag "$WEB_IMAGE:build-$CI_PIPELINE_IID"
+        --tag "$WEB_IMAGE:$CI_COMMIT_TAG"
+        --tag "$WEB_IMAGE:latest"
         .
-    - docker push "$WEB_IMAGE:build-$CI_PIPELINE_IID"
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v/'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
-
-# ── Publish stage (tag pushes only) ───────────────────────────────────────────
-
-publish:bot:
-  stage: publish
-  <<: *docker_job
-  needs: [build:bot]
-  script:
-    # Re-tag the ephemeral build image with the Git tag (e.g. v1.2.3)
-    - docker pull "$BOT_IMAGE:build-$CI_PIPELINE_IID"
-    - docker tag  "$BOT_IMAGE:build-$CI_PIPELINE_IID" "$BOT_IMAGE:$CI_COMMIT_TAG"
-    - docker push "$BOT_IMAGE:$CI_COMMIT_TAG"
-    # Also push as latest
-    - docker tag  "$BOT_IMAGE:build-$CI_PIPELINE_IID" "$BOT_IMAGE:latest"
-    - docker push "$BOT_IMAGE:latest"
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v/'
-
-publish:web:
-  stage: publish
-  <<: *docker_job
-  needs: [build:web]
-  script:
-    - docker pull "$WEB_IMAGE:build-$CI_PIPELINE_IID"
-    - docker tag  "$WEB_IMAGE:build-$CI_PIPELINE_IID" "$WEB_IMAGE:$CI_COMMIT_TAG"
     - docker push "$WEB_IMAGE:$CI_COMMIT_TAG"
-    - docker tag  "$WEB_IMAGE:build-$CI_PIPELINE_IID" "$WEB_IMAGE:latest"
     - docker push "$WEB_IMAGE:latest"
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v/'
 
-# ── Retag stage — remove ephemeral build tags ──────────────────────────────────
-# Uses the GitLab Container Registry API to delete old build-* tags after
-# the versioned tags have been published.
+# ── Cleanup stage ──────────────────────────────────────────────────────────────
+# Deletes all tags that are NOT the version tag or latest, keeping the registry tidy.
+# Requires CI_REGISTRY_TOKEN set in GitLab → Settings → CI/CD → Variables.
 
-retag:cleanup-old-latest:
-  stage: retag
+cleanup:old-tags:
+  stage: cleanup
   image: alpine:3.20
   needs: [publish:bot, publish:web]
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v/'
   variables:
     REGISTRY_API: "$CI_SERVER_URL/api/v4/projects/$CI_PROJECT_ID/registry/repositories"
   before_script:
     - apk add --no-cache curl jq
   script:
     - |
-      # Fetch the current 'latest' digest for the bot image (just published)
-      NEW_BOT_DIGEST=$(curl -s --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
-        "$REGISTRY_API?tags=true" | \
-        jq -r '.[] | select(.name=="bot") | .id')
+      for REPO_NAME in bot web; do
+        REPO_ID=$(curl -s --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
+          "$REGISTRY_API" | jq -r --arg n "$REPO_NAME" '.[] | select(.name==$n) | .id')
 
-      NEW_WEB_DIGEST=$(curl -s --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
-        "$REGISTRY_API?tags=true" | \
-        jq -r '.[] | select(.name=="web") | .id')
+        if [ -z "$REPO_ID" ]; then
+          echo "Could not find registry repo for $REPO_NAME, skipping."
+          continue
+        fi
 
-      echo "Bot registry repo ID: $NEW_BOT_DIGEST"
-      echo "Web registry repo ID: $NEW_WEB_DIGEST"
+        echo "Cleaning up old tags in $REPO_NAME (repo ID: $REPO_ID)"
 
-      # Delete all ephemeral build-* tags now that versioned tags are published
-      # (GitLab CE: DELETE /registry/repositories/:id/tags/:tag_name)
-      for REPO_ID in $NEW_BOT_DIGEST $NEW_WEB_DIGEST; do
         TAGS=$(curl -s --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
           "$REGISTRY_API/$REPO_ID/tags" | jq -r '.[].name')
+
         for TAG in $TAGS; do
-          if [[ "$TAG" == build-* ]]; then
-            echo "Deleting ephemeral tag: $TAG from repo $REPO_ID"
+          if [ "$TAG" = "latest" ] || [ "$TAG" = "$CI_COMMIT_TAG" ]; then
+            echo "  Keeping: $TAG"
+          else
+            echo "  Deleting: $TAG"
             curl -s -X DELETE --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
               "$REGISTRY_API/$REPO_ID/tags/$TAG"
           fi
         done
       done
-  rules:
-    - if: '$CI_COMMIT_TAG =~ /^v/'

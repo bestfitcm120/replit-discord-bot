@@ -7,6 +7,12 @@
 #   • Tag push (v*) → build both images, publish to the GitLab Container Registry
 #                      with the tag version AND 'latest'
 #   • Merge to main  → build-only (no push) to verify the images compile
+#
+# Runner setup: Docker executor with socket binding (no dind).
+# In your runner config.toml ensure:
+#   [runners.docker]
+#     privileged = false
+#     volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
 # ──────────────────────────────────────────────────────────────────────────────
 
 stages:
@@ -16,14 +22,18 @@ stages:
 
 # ── Global variables ───────────────────────────────────────────────────────────
 variables:
-  BOT_IMAGE:  "$CI_REGISTRY_IMAGE/bot"
-  WEB_IMAGE:  "$CI_REGISTRY_IMAGE/web"
+  BOT_IMAGE:    "$CI_REGISTRY_IMAGE/bot"
+  WEB_IMAGE:    "$CI_REGISTRY_IMAGE/web"
   DOCKER_DRIVER: overlay2
-  DOCKER_TLS_CERTDIR: "/certs"
+  # Use the host Docker daemon via the bind-mounted socket.
+  # No dind service needed — avoids the /var/run/docker.sock conflict.
+  DOCKER_HOST:  "unix:///var/run/docker.sock"
 
 # ── Templates ──────────────────────────────────────────────────────────────────
 
-.docker_login: &docker_login
+.docker_job: &docker_job
+  image: docker:27
+  # No services: docker:dind — we use socket binding instead
   before_script:
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
 
@@ -31,10 +41,7 @@ variables:
 
 build:bot:
   stage: build
-  image: docker:27
-  services:
-    - docker:27-dind
-  <<: *docker_login
+  <<: *docker_job
   script:
     # Pull the previous image for layer caching (fail silently if none exists)
     - docker pull "$BOT_IMAGE:latest" || true
@@ -51,10 +58,7 @@ build:bot:
 
 build:web:
   stage: build
-  image: docker:27
-  services:
-    - docker:27-dind
-  <<: *docker_login
+  <<: *docker_job
   script:
     - docker pull "$WEB_IMAGE:latest" || true
     - docker build
@@ -71,10 +75,7 @@ build:web:
 
 publish:bot:
   stage: publish
-  image: docker:27
-  services:
-    - docker:27-dind
-  <<: *docker_login
+  <<: *docker_job
   needs: [build:bot]
   script:
     # Re-tag the ephemeral build image with the Git tag (e.g. v1.2.3)
@@ -89,10 +90,7 @@ publish:bot:
 
 publish:web:
   stage: publish
-  image: docker:27
-  services:
-    - docker:27-dind
-  <<: *docker_login
+  <<: *docker_job
   needs: [build:web]
   script:
     - docker pull "$WEB_IMAGE:build-$CI_PIPELINE_IID"
@@ -103,13 +101,9 @@ publish:web:
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v/'
 
-# ── Retag stage — remove 'latest' from ALL previous images ────────────────────
-# Uses the GitLab Container Registry API to delete old 'latest' digest tags
-# so only the newest tag carries 'latest'.
-#
-# This job runs AFTER publish so the new 'latest' already exists.
-# It queries every tag named 'latest' whose digest does NOT match
-# the image we just pushed, then deletes those old manifests.
+# ── Retag stage — remove ephemeral build tags ──────────────────────────────────
+# Uses the GitLab Container Registry API to delete old build-* tags after
+# the versioned tags have been published.
 
 retag:cleanup-old-latest:
   stage: retag
@@ -133,14 +127,13 @@ retag:cleanup-old-latest:
       echo "Bot registry repo ID: $NEW_BOT_DIGEST"
       echo "Web registry repo ID: $NEW_WEB_DIGEST"
 
-      # Delete all tags named 'latest' EXCEPT the one we just pushed
+      # Delete all ephemeral build-* tags now that versioned tags are published
       # (GitLab CE: DELETE /registry/repositories/:id/tags/:tag_name)
       for REPO_ID in $NEW_BOT_DIGEST $NEW_WEB_DIGEST; do
         TAGS=$(curl -s --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
           "$REGISTRY_API/$REPO_ID/tags" | jq -r '.[].name')
         for TAG in $TAGS; do
-          if [ "$TAG" != "latest" ] && [ "$TAG" != "$CI_COMMIT_TAG" ] && \
-             [[ "$TAG" == build-* ]]; then
+          if [[ "$TAG" == build-* ]]; then
             echo "Deleting ephemeral tag: $TAG from repo $REPO_ID"
             curl -s -X DELETE --header "PRIVATE-TOKEN: $CI_REGISTRY_TOKEN" \
               "$REGISTRY_API/$REPO_ID/tags/$TAG"

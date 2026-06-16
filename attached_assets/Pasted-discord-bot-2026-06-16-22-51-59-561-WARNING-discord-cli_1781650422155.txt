@@ -1,0 +1,63 @@
+discord-bot  | 2026-06-16 22:51:59,561 [WARNING] discord.client: PyNaCl is not installed, voice will NOT be supported
+discord-bot  | 2026-06-16 22:51:59,561 [INFO] discord.client: logging in using static token
+discord-bot  | 2026-06-16 22:52:00,031 [INFO] bot.core.database: Database connection pool created
+discord-bot  | 2026-06-16 22:52:00,032 [INFO] bot.features.logging.cog: LoggingCog loaded, database pool ready.
+discord-bot  | 2026-06-16 22:52:00,032 [INFO] bot.core.bot: Loaded extension: bot.features.logging.cog
+discord-bot  | 2026-06-16 22:52:00,051 [INFO] bot.features.moderation.cog: ModerationCog loaded.
+discord-bot  | 2026-06-16 22:52:00,052 [INFO] bot.core.bot: Loaded extension: bot.features.moderation.cog
+discord-bot  | 2026-06-16 22:52:00,062 [ERROR] bot.core.bot: Failed to load extension bot.features.temp_voice.cog: Extension 'bot.features.temp_voice.cog' raised an error: UndefinedTableError: relation "temp_voice_channels" does not exist
+discord-bot  | Traceback (most recent call last):
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 963, in _load_from_module_spec
+discord-bot  |     await setup(self)
+discord-bot  |   File "/app/bot/features/temp_voice/cog.py", line 185, in setup
+discord-bot  |     await bot.add_cog(TempVoiceCog(bot))
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 799, in add_cog
+discord-bot  |     cog = await cog._inject(self, override=override, guild=guild, guilds=guilds)
+discord-bot  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/discord/ext/commands/cog.py", line 706, in _inject
+discord-bot  |     await maybe_coroutine(self.cog_load)
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/discord/utils.py", line 694, in maybe_coroutine
+discord-bot  |     return await value
+discord-bot  |            ^^^^^^^^^^^
+discord-bot  |   File "/app/bot/features/temp_voice/cog.py", line 55, in cog_load
+discord-bot  |     await self._startup_cleanup()
+discord-bot  |   File "/app/bot/features/temp_voice/cog.py", line 67, in _startup_cleanup
+discord-bot  |     rows = await get_all_temp_channels(self.pool)
+discord-bot  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/app/bot/core/database.py", line 174, in get_all_temp_channels
+discord-bot  |     rows = await pool.fetch("SELECT channel_id, guild_id, owner_id FROM temp_voice_channels")
+discord-bot  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 570, in fetch
+discord-bot  |     return await con.fetch(
+discord-bot  |            ^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 691, in fetch
+discord-bot  |     return await self._execute(
+discord-bot  |            ^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 1794, in _execute
+discord-bot  |     result, _ = await self.__execute(
+discord-bot  |                 ^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 1892, in __execute
+discord-bot  |     result, stmt = await self._do_execute(
+discord-bot  |                    ^^^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 1925, in _do_execute
+discord-bot  |     stmt = await self._get_statement(
+discord-bot  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 433, in _get_statement
+discord-bot  |     statement = await self._protocol.prepare(
+discord-bot  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-bot  |   File "asyncpg/protocol/protocol.pyx", line 166, in prepare
+discord-bot  | asyncpg.exceptions.UndefinedTableError: relation "temp_voice_channels" does not exist
+discord-bot  | 
+discord-bot  | The above exception was the direct cause of the following exception:
+discord-bot  | 
+discord-bot  | Traceback (most recent call last):
+discord-bot  |   File "/app/bot/core/bot.py", line 41, in _load_features
+discord-bot  |     await self.load_extension(ext)
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 1029, in load_extension
+discord-bot  |     await self._load_from_module_spec(spec, name)
+discord-bot  |   File "/usr/local/lib/python3.12/site-packages/discord/ext/commands/bot.py", line 968, in _load_from_module_spec
+discord-bot  |     raise errors.ExtensionFailed(key, e) from e
+discord-bot  | discord.ext.commands.errors.ExtensionFailed: Extension 'bot.features.temp_voice.cog' raised an error: UndefinedTableError: relation "temp_voice_channels" does not exist
+discord-bot  | 2026-06-16 22:52:00,523 [INFO] bot.core.bot: Bot setup complete, commands synced.
+discord-bot  | 2026-06-16 22:52:00,923 [INFO] discord.gateway: Shard ID None has connected to Gateway (Session ID: def9bc0121e3e78164fbc315b3102cb9).
+discord-bot  | 2026-06-16 22:52:02,926 [INFO] bot.core.bot: Logged in as Heimdall#2821 (ID: 1516554216447938681)

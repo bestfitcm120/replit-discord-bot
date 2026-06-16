@@ -12,7 +12,81 @@ async def get_pool(database_url: str) -> asyncpg.Pool:
     if _pool is None:
         _pool = await asyncpg.create_pool(database_url, min_size=1, max_size=10)
         logger.info("Database connection pool created")
+        await _ensure_schema(_pool)
     return _pool
+
+
+async def _ensure_schema(pool: asyncpg.Pool) -> None:
+    """
+    Idempotently applies any schema changes the bot depends on.
+    Uses IF NOT EXISTS / ADD COLUMN IF NOT EXISTS so it is safe to run on
+    every startup against both fresh and existing databases.
+    """
+    async with pool.acquire() as conn:
+        # ── Core tables (created by Drizzle on first dev push, but production
+        #    Docker databases may be initialised without running the Node toolchain)
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS guild_configs (
+                guild_id             TEXT PRIMARY KEY,
+                default_log_channel  TEXT,
+                log_channels         JSONB NOT NULL DEFAULT '{}',
+                creation_voice_channel TEXT,
+                updated_at           TIMESTAMPTZ
+            )
+        """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS log_entries (
+                id          BIGSERIAL PRIMARY KEY,
+                guild_id    TEXT NOT NULL,
+                event_type  TEXT NOT NULL,
+                user_id     TEXT,
+                target_id   TEXT,
+                description TEXT NOT NULL,
+                metadata    JSONB NOT NULL DEFAULT '{}',
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+        """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS member_events (
+                id          BIGSERIAL PRIMARY KEY,
+                guild_id    TEXT NOT NULL,
+                user_id     TEXT NOT NULL,
+                event_type  TEXT NOT NULL,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+        """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS message_stats (
+                guild_id    TEXT NOT NULL,
+                channel_id  TEXT NOT NULL,
+                user_id     TEXT NOT NULL,
+                is_bot      BOOLEAN NOT NULL DEFAULT FALSE,
+                stat_date   DATE NOT NULL,
+                count       INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (guild_id, channel_id, user_id, stat_date)
+            )
+        """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS temp_voice_channels (
+                channel_id  TEXT PRIMARY KEY,
+                guild_id    TEXT NOT NULL,
+                owner_id    TEXT NOT NULL,
+                created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+        """)
+
+        # ── Column additions for databases that existed before these fields
+        #    were added (ALTER TABLE ... ADD COLUMN IF NOT EXISTS is idempotent)
+        await conn.execute("""
+            ALTER TABLE guild_configs
+                ADD COLUMN IF NOT EXISTS creation_voice_channel TEXT
+        """)
+
+    logger.info("Database schema verified / migrated successfully")
 
 
 async def close_pool() -> None:

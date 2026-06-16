@@ -1,0 +1,590 @@
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist
+discord-web  | Traceback (most recent call last):
+discord-web  |   File "<frozen runpy>", line 198, in _run_module_as_main
+discord-web  |   File "<frozen runpy>", line 88, in _run_code
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/__main__.py", line 4, in <module>
+discord-web  |     uvicorn.main()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1524, in __call__
+discord-web  |     return self.main(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1445, in main
+discord-web  |     rv = self.invoke(ctx)
+discord-web  |          ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 1308, in invoke
+discord-web  |     return ctx.invoke(self.callback, **ctx.params)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/click/core.py", line 877, in invoke
+discord-web  |     return callback(*args, **kwargs)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 412, in main
+discord-web  |     run(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/main.py", line 579, in run
+discord-web  |     server.run()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 65, in run
+discord-web  |     return asyncio.run(self.serve(sockets=sockets))
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 195, in run
+discord-web  |     return runner.run(main)
+discord-web  |            ^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/asyncio/runners.py", line 118, in run
+discord-web  |     return self._loop.run_until_complete(task)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1518, in uvloop.loop.Loop.run_until_complete
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 69, in serve
+discord-web  |     await self._serve(sockets)
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/server.py", line 76, in _serve
+discord-web  |     config.load()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/config.py", line 434, in load
+discord-web  |     self.loaded_app = import_from_string(self.app)
+discord-web  |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/uvicorn/importer.py", line 19, in import_from_string
+discord-web  |     module = importlib.import_module(module_str)
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/importlib/__init__.py", line 90, in import_module
+discord-web  |     return _bootstrap._gcd_import(name[level:], package, level)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "<frozen importlib._bootstrap>", line 1387, in _gcd_import
+discord-web  |   File "<frozen importlib._bootstrap>", line 1360, in _find_and_load
+discord-web  |   File "<frozen importlib._bootstrap>", line 1331, in _find_and_load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap>", line 935, in _load_unlocked
+discord-web  |   File "<frozen importlib._bootstrap_external>", line 999, in exec_module
+discord-web  |   File "<frozen importlib._bootstrap>", line 488, in _call_with_frames_removed
+discord-web  |   File "/app/web/main.py", line 18, in <module>
+discord-web  |     app = create_app()
+discord-web  |           ^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/app.py", line 59, in create_app
+discord-web  |     app.mount("/assets", StaticFiles(directory=os.path.join(static_dir, "assets")), name="assets")
+discord-web  |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/staticfiles.py", line 56, in __init__
+discord-web  |     raise RuntimeError(f"Directory '{directory}' does not exist")
+discord-web  | RuntimeError: Directory '/app/web/core/../../dist/assets' does not exist

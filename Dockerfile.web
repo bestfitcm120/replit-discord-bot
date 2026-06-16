@@ -60,8 +60,10 @@ COPY --from=python-deps /usr/local/bin /usr/local/bin
 # Copy backend source
 COPY web/ /app/web/
 
-# Copy built React files into /app/dist (FastAPI serves these as static files)
-COPY --from=frontend-build /frontend/artifacts/dashboard/dist /app/dist
+# Copy built React files into /app/dist (FastAPI serves these as static files).
+# Vite writes to dist/public/, so we copy that subdirectory directly so that
+# /app/dist/index.html and /app/dist/assets/ match what app.py expects.
+COPY --from=frontend-build /frontend/artifacts/dashboard/dist/public /app/dist
 
 # Non-root user
 RUN groupadd -r webuser && useradd -r -g webuser webuser

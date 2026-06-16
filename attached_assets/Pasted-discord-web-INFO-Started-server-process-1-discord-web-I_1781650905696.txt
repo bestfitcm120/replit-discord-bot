@@ -1,0 +1,536 @@
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.
+discord-web  | INFO:     Started server process [1]
+discord-web  | INFO:     Waiting for application startup.
+discord-web  | ERROR:    Traceback (most recent call last):
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/starlette/routing.py", line 693, in lifespan
+discord-web  |     async with self.lifespan_context(app) as maybe_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/fastapi/routing.py", line 133, in merged_lifespan
+discord-web  |     async with original_context(app) as maybe_original_state:
+discord-web  |                ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/contextlib.py", line 210, in __aenter__
+discord-web  |     return await anext(self.gen)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/app/web/core/database.py", line 17, in lifespan
+discord-web  |     _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+discord-web  |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 403, in _async__init__
+discord-web  |     await self._initialize()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 430, in _initialize
+discord-web  |     await first_ch.connect()
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 128, in connect
+discord-web  |     self._con = await self._pool._get_new_connection()
+discord-web  |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/pool.py", line 502, in _get_new_connection
+discord-web  |     con = await connection.connect(
+discord-web  |           ^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connection.py", line 2329, in connect
+discord-web  |     return await connect_utils._connect(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 1017, in _connect
+discord-web  |     raise last_error or exceptions.TargetServerAttributeNotMatched(
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 991, in _connect
+discord-web  |     conn = await _connect_addr(
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 828, in _connect_addr
+discord-web  |     return await __connect_addr(params, True, *args)
+discord-web  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 873, in __connect_addr
+discord-web  |     tr, pr = await connector
+discord-web  |              ^^^^^^^^^^^^^^^
+discord-web  |   File "/usr/local/lib/python3.12/site-packages/asyncpg/connect_utils.py", line 744, in _create_ssl_connection
+discord-web  |     tr, pr = await loop.create_connection(
+discord-web  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+discord-web  |   File "uvloop/loop.pyx", line 1982, in create_connection
+discord-web  | socket.gaierror: [Errno -2] Name or service not known
+discord-web  | 
+discord-web  | ERROR:    Application startup failed. Exiting.

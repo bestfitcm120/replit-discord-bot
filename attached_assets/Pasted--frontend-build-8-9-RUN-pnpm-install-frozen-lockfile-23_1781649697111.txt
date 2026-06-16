@@ -1,0 +1,84 @@
+[frontend-build 8/9] RUN pnpm install --frozen-lockfile
+#23 1.507 Scope: all 6 workspace projects
+#23 1.739 Lockfile is up to date, resolution step is skipped
+#23 1.917 Progress: resolved 1, reused 0, downloaded 0, added 0
+#23 2.160 Packages: +377
+#23 2.160 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#23 2.924 Progress: resolved 377, reused 0, downloaded 25, added 8
+#23 3.398 
+#23 3.398    ╭──────────────────────────────────────────────╮
+#23 3.398    │                                              │
+#23 3.398    │     Update available! 10.26.1 → 11.7.0.      │
+#23 3.398    │     Changelog: https://pnpm.io/v/11.7.0      │
+#23 3.398    │   To update, run: corepack use pnpm@11.7.0   │
+#23 3.398    │                                              │
+#23 3.398    ╰──────────────────────────────────────────────╯
+#23 3.398 
+#23 3.940 Progress: resolved 377, reused 0, downloaded 129, added 80
+#23 4.951 Progress: resolved 377, reused 0, downloaded 176, added 109
+#23 5.956 Progress: resolved 377, reused 0, downloaded 189, added 113
+#23 6.957 Progress: resolved 377, reused 0, downloaded 254, added 143
+#23 7.960 Progress: resolved 377, reused 0, downloaded 293, added 176
+#23 8.962 Progress: resolved 377, reused 0, downloaded 374, added 272
+#23 9.962 Progress: resolved 377, reused 0, downloaded 376, added 376
+#23 10.59 Progress: resolved 377, reused 0, downloaded 377, added 377, done
+#23 11.07 .../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js
+#23 11.21 .../esbuild@0.27.3/node_modules/esbuild postinstall: Done
+#23 11.54 
+#23 11.54 devDependencies:
+#23 11.54 + prettier 3.8.3
+#23 11.54 + typescript 5.9.3
+#23 11.54 
+#23 11.57 . preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+#23 11.64 . preinstall: Done
+#23 11.74 Done in 11.2s using pnpm v10.26.1
+#23 DONE 12.4s
+#24 [frontend-build 9/9] RUN pnpm --filter @workspace/dashboard run build
+#24 1.334 
+#24 1.334 > @workspace/dashboard@0.0.0 build /frontend/artifacts/dashboard
+#24 1.334 > vite build --config vite.config.ts
+#24 1.334 
+#24 2.252 failed to load config from /frontend/artifacts/dashboard/vite.config.ts
+#24 2.257 error during build:
+#24 2.257 Error: PORT environment variable is required but was not provided.
+#24 2.257     at file:///frontend/artifacts/dashboard/node_modules/.vite-temp/vite.config.ts.timestamp-1781649671578-2d9ff73ae10a9.mjs:10:9
+#24 2.257     at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+#24 2.257     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+#24 2.257     at async loadConfigFromBundledFile (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35936:12)
+#24 2.257     at async bundleAndLoadConfigFile (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35824:17)
+#24 2.257     at async loadConfigFromFile (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35791:42)
+#24 2.257     at async resolveConfig (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35440:22)
+#24 2.257     at async createBuilder (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:33895:19)
+#24 2.257     at async CAC.<anonymous> (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/cli.js:629:10)
+#24 2.321 /frontend/artifacts/dashboard:
+#24 2.321  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/dashboard@0.0.0 build: `vite build --config vite.config.ts`
+#24 2.321 Exit status 1
+#24 ERROR: process "/bin/sh -c pnpm --filter @workspace/dashboard run build" did not complete successfully: exit code: 1
+------
+ > importing cache manifest from registry.bestfit.fyi/bestfitcm120/replit-discord-bot/web:latest:
+------
+------
+ > [frontend-build 9/9] RUN pnpm --filter @workspace/dashboard run build:
+2.257     at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:681:26)
+2.257     at async loadConfigFromBundledFile (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35936:12)
+2.257     at async bundleAndLoadConfigFile (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35824:17)
+2.257     at async loadConfigFromFile (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35791:42)
+2.257     at async resolveConfig (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:35440:22)
+2.257     at async createBuilder (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/chunks/config.js:33895:19)
+2.257     at async CAC.<anonymous> (file:///frontend/node_modules/.pnpm/vite@7.3.3_@types+node@25.6.2_jiti@2.7.0_lightningcss@1.32.0_tsx@4.21.0_yaml@2.8.4/node_modules/vite/dist/node/cli.js:629:10)
+2.321 /frontend/artifacts/dashboard:
+2.321  ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL  @workspace/dashboard@0.0.0 build: `vite build --config vite.config.ts`
+2.321 Exit status 1
+------
+Dockerfile.web:36
+--------------------
+  34 |     
+  35 |     # Build the React app
+  36 | >>> RUN pnpm --filter @workspace/dashboard run build
+  37 |     
+  38 |     # ── Stage 2: Python deps ───────────────────────────────────────────────────────
+--------------------
+ERROR: failed to solve: process "/bin/sh -c pnpm --filter @workspace/dashboard run build" did not complete successfully: exit code: 1
+Cleaning up project directory and file based variables
+00:01
+ERROR: Job failed: exit code 1

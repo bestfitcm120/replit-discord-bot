@@ -6,6 +6,7 @@ export const guildConfigs = pgTable("guild_configs", {
   guildId: text("guild_id").primaryKey(),
   defaultLogChannel: text("default_log_channel"),
   logChannels: jsonb("log_channels").notNull().default({}),
+  creationVoiceChannel: text("creation_voice_channel"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
@@ -48,3 +49,12 @@ export const messageStats = pgTable("message_stats", {
 }));
 
 export type MessageStat = typeof messageStats.$inferSelect;
+
+export const tempVoiceChannels = pgTable("temp_voice_channels", {
+  channelId: text("channel_id").primaryKey(),
+  guildId: text("guild_id").notNull(),
+  ownerId: text("owner_id").notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export type TempVoiceChannel = typeof tempVoiceChannels.$inferSelect;

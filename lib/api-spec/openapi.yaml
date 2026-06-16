@@ -119,13 +119,19 @@ paths:
     get:
       operationId: listGuildChannels
       tags: [guilds]
-      summary: List text channels in a guild
+      summary: List channels in a guild, optionally filtered by Discord channel type
       parameters:
         - name: guildId
           in: path
           required: true
           schema:
             type: string
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: "Discord channel type filter: 0=text, 2=voice, 5=announcement. Omit to get text+announcement."
       responses:
         "200":
           description: List of channels
@@ -435,6 +441,8 @@ components:
           type: ["string", "null"]
         logChannels:
           $ref: "#/components/schemas/LogChannelMap"
+        creationVoiceChannel:
+          type: ["string", "null"]
         updatedAt:
           type: string
       required:
@@ -448,6 +456,8 @@ components:
           type: ["string", "null"]
         logChannels:
           $ref: "#/components/schemas/LogChannelMap"
+        creationVoiceChannel:
+          type: ["string", "null"]
 
     LogChannelMap:
       type: object

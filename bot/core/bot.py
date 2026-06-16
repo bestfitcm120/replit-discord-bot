@@ -34,6 +34,7 @@ class ModerationBot(commands.Bot):
         extensions = [
             "bot.features.logging.cog",
             "bot.features.moderation.cog",
+            "bot.features.temp_voice.cog",
         ]
         for ext in extensions:
             try:

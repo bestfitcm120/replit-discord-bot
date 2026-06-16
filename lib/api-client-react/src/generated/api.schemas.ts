@@ -109,6 +109,8 @@ export interface GuildConfig {
   /** @nullable */
   defaultLogChannel?: string | null;
   logChannels: LogChannelMap;
+  /** @nullable */
+  creationVoiceChannel?: string | null;
   updatedAt?: string;
 }
 
@@ -116,6 +118,8 @@ export interface GuildConfigInput {
   /** @nullable */
   defaultLogChannel?: string | null;
   logChannels?: LogChannelMap;
+  /** @nullable */
+  creationVoiceChannel?: string | null;
 }
 
 export interface GuildStats {
@@ -158,6 +162,13 @@ export interface LogEntry {
 export interface BotInvite {
   url: string;
 }
+
+export type ListGuildChannelsParams = {
+/**
+ * Discord channel type filter: 0=text, 2=voice, 5=announcement. Omit to get text+announcement.
+ */
+type?: number;
+};
 
 export type ListGuildModerationParams = {
 /**

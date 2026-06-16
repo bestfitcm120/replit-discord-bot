@@ -33,13 +33,14 @@ async function fetchBotGuildIds(): Promise<Set<string>> {
   return new Set(guilds.map((g) => g.id));
 }
 
-async function fetchGuildChannels(gId: string): Promise<DiscordChannel[]> {
+async function fetchGuildChannels(gId: string, typeFilter?: number): Promise<DiscordChannel[]> {
   const botToken = process.env["DISCORD_BOT_TOKEN"] ?? "";
   const res = await fetch(`${DISCORD_API}/guilds/${gId}/channels`, {
     headers: { Authorization: `Bot ${botToken}` },
   });
   if (!res.ok) return [];
   const channels = await res.json() as DiscordChannel[];
+  if (typeFilter !== undefined) return channels.filter((c) => c.type === typeFilter);
   return channels.filter((c) => c.type === 0 || c.type === 5);
 }
 
@@ -120,7 +121,9 @@ router.get("/:guildId", async (req: Request, res: Response) => {
 router.get("/:guildId/channels", async (req: Request, res: Response) => {
   const session = getSession(req);
   if (!session) { unauth(res); return; }
-  const channels = await fetchGuildChannels(getId(req));
+  const rawType = req.query["type"];
+  const typeFilter = rawType !== undefined ? parseInt(String(rawType), 10) : undefined;
+  const channels = await fetchGuildChannels(getId(req), Number.isNaN(typeFilter) ? undefined : typeFilter);
   res.json(channels);
 });
 
@@ -132,13 +135,14 @@ router.get("/:guildId/config", async (req: Request, res: Response) => {
   const gId = getId(req);
   const [config] = await db.select().from(guildConfigs).where(eq(guildConfigs.guildId, gId));
   if (!config) {
-    res.json({ guildId: gId, defaultLogChannel: null, logChannels: {}, updatedAt: null });
+    res.json({ guildId: gId, defaultLogChannel: null, logChannels: {}, creationVoiceChannel: null, updatedAt: null });
     return;
   }
   res.json({
     guildId: config.guildId,
     defaultLogChannel: config.defaultLogChannel,
     logChannels: config.logChannels,
+    creationVoiceChannel: config.creationVoiceChannel,
     updatedAt: config.updatedAt?.toISOString() ?? null,
   });
 });
@@ -149,24 +153,30 @@ router.put("/:guildId/config", async (req: Request, res: Response) => {
   if (!session) { unauth(res); return; }
 
   const gId = getId(req);
-  const { defaultLogChannel, logChannels } = req.body as { defaultLogChannel?: string | null; logChannels?: Record<string, string | null> };
+  const { defaultLogChannel, logChannels, creationVoiceChannel } = req.body as {
+    defaultLogChannel?: string | null;
+    logChannels?: Record<string, string | null>;
+    creationVoiceChannel?: string | null;
+  };
 
   const now = new Date();
   await db.insert(guildConfigs).values({
     guildId: gId,
     defaultLogChannel: defaultLogChannel ?? null,
     logChannels: logChannels ?? {},
+    creationVoiceChannel: creationVoiceChannel ?? null,
     updatedAt: now,
   }).onConflictDoUpdate({
     target: guildConfigs.guildId,
     set: {
       defaultLogChannel: defaultLogChannel ?? null,
       logChannels: logChannels ?? {},
+      creationVoiceChannel: creationVoiceChannel ?? null,
       updatedAt: now,
     },
   });
 
-  res.json({ guildId: gId, defaultLogChannel, logChannels, updatedAt: now.toISOString() });
+  res.json({ guildId: gId, defaultLogChannel, logChannels, creationVoiceChannel, updatedAt: now.toISOString() });
 });
 
 // GET /api/guilds/:guildId/stats

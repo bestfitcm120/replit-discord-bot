@@ -21,6 +21,7 @@ const LOG_EVENTS: Array<{ key: string; label: string; category: string }> = [
   { key: "member_timeout_add", label: "Timeout Given", category: "Member Events" },
   { key: "member_timeout_remove", label: "Timeout Removed", category: "Member Events" },
   { key: "member_kick", label: "Member Kicked", category: "Member Events" },
+  { key: "member_warn", label: "Member Warned", category: "Member Events" },
   { key: "member_join", label: "Member Joined", category: "Member Events" },
   { key: "member_leave", label: "Member Left", category: "Member Events" },
   { key: "member_nickname_change", label: "Nickname Changed", category: "Member Events" },
@@ -42,14 +43,15 @@ const LOG_EVENTS: Array<{ key: string; label: string; category: string }> = [
 
 const CATEGORIES = ["Member Events", "Message Events", "Voice Events", "Role Events", "Channel Events", "Server Events"];
 
-interface ChannelSelect {
+interface ChannelSelectProps {
   value: string | null;
   onChange: (v: string | null) => void;
   channels: Array<{ id: string; name: string }>;
   placeholder?: string;
+  prefix?: string;
 }
 
-function ChannelSelect({ value, onChange, channels, placeholder = "Select channel..." }: ChannelSelect) {
+function ChannelSelect({ value, onChange, channels, placeholder = "Select channel...", prefix = "#" }: ChannelSelectProps) {
   return (
     <select
       value={value ?? ""}
@@ -58,7 +60,7 @@ function ChannelSelect({ value, onChange, channels, placeholder = "Select channe
     >
       <option value="">{placeholder}</option>
       {channels.map((c) => (
-        <option key={c.id} value={c.id}>#{c.name}</option>
+        <option key={c.id} value={c.id}>{prefix}{c.name}</option>
       ))}
     </select>
   );
@@ -75,13 +77,22 @@ export default function ServerSettings() {
   const { data: config, isLoading: configLoading } = useGetGuildConfig(guildId, {
     query: { enabled: !!guildId && !!user, queryKey: getGetGuildConfigQueryKey(guildId) },
   });
-  const { data: channels = [] } = useListGuildChannels(guildId, {
-    query: { enabled: !!guildId && !!user, queryKey: getListGuildChannelsQueryKey(guildId) },
+
+  // Text channels for log channel selectors
+  const { data: textChannels = [] } = useListGuildChannels(guildId, {}, {
+    query: { enabled: !!guildId && !!user, queryKey: getListGuildChannelsQueryKey(guildId, {}) },
   });
+
+  // Voice channels for the creation voice channel selector
+  const { data: voiceChannels = [] } = useListGuildChannels(guildId, { type: 2 }, {
+    query: { enabled: !!guildId && !!user, queryKey: getListGuildChannelsQueryKey(guildId, { type: 2 }) },
+  });
+
   const updateConfig = useUpdateGuildConfig();
 
   const [defaultChannel, setDefaultChannel] = useState<string | null>(null);
   const [logChannels, setLogChannels] = useState<Record<string, string | null>>({});
+  const [creationVoiceChannel, setCreationVoiceChannel] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
@@ -92,6 +103,7 @@ export default function ServerSettings() {
     if (config) {
       setDefaultChannel(config.defaultLogChannel ?? null);
       setLogChannels(config.logChannels as Record<string, string | null>);
+      setCreationVoiceChannel(config.creationVoiceChannel ?? null);
       setDirty(false);
     }
   }, [config]);
@@ -106,15 +118,20 @@ export default function ServerSettings() {
     setDirty(true);
   }
 
+  function setCreationVoice(value: string | null) {
+    setCreationVoiceChannel(value);
+    setDirty(true);
+  }
+
   async function handleSave() {
     try {
       await updateConfig.mutateAsync({
         guildId,
-        data: { defaultLogChannel: defaultChannel, logChannels },
+        data: { defaultLogChannel: defaultChannel, logChannels, creationVoiceChannel },
       });
       queryClient.invalidateQueries({ queryKey: getGetGuildConfigQueryKey(guildId) });
       setDirty(false);
-      toast({ title: "Settings saved", description: "Log channel configuration has been updated." });
+      toast({ title: "Settings saved", description: "Configuration has been updated." });
     } catch {
       toast({ title: "Save failed", description: "Could not save configuration.", variant: "destructive" });
     }
@@ -122,7 +139,7 @@ export default function ServerSettings() {
 
   if (!user) return null;
 
-  const textChannels = channels.filter((c) => c.type === 0 || c.type === 5);
+  const filteredText = textChannels.filter((c) => c.type === 0 || c.type === 5);
 
   return (
     <ServerLayout guildId={guildId} activePage="settings">
@@ -130,9 +147,9 @@ export default function ServerSettings() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Log Channel Settings</h2>
+            <h2 className="text-xl font-bold text-foreground">Server Settings</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Choose which channel receives each type of log event. Leave blank to use the default channel.
+              Configure log channels and bot features for this server.
             </p>
           </div>
           <button
@@ -150,7 +167,59 @@ export default function ServerSettings() {
           </div>
         ) : (
           <>
-            {/* Default channel */}
+            {/* ── Temporary Voice Channels ─────────────────────────────────── */}
+            <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 overflow-hidden">
+              <div className="px-5 py-3 border-b border-indigo-500/20 bg-indigo-500/10 flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-indigo-400">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                <span className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">
+                  Temporary Voice Channels
+                </span>
+              </div>
+
+              <div className="p-5 space-y-4">
+                <p className="text-sm text-muted-foreground">
+                  When a member joins the creation channel, the bot instantly creates a private
+                  voice channel for them (inheriting all Discord permissions you've set), grants
+                  the member full control over it, then auto-deletes it when everyone leaves.
+                </p>
+
+                <div className="flex items-center justify-between gap-4 flex-wrap">
+                  <div>
+                    <div className="font-medium text-sm text-foreground">Creation Voice Channel</div>
+                    <div className="text-xs text-muted-foreground mt-0.5">
+                      Joining this channel triggers temp channel creation.
+                      Set permissions on it in Discord to control who can use the feature.
+                    </div>
+                  </div>
+                  <ChannelSelect
+                    value={creationVoiceChannel}
+                    onChange={setCreationVoice}
+                    channels={voiceChannels}
+                    placeholder="Disabled — pick a voice channel"
+                    prefix="🔊 "
+                  />
+                </div>
+
+                {creationVoiceChannel && (
+                  <div className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 px-4 py-3 text-xs text-indigo-300 space-y-1">
+                    <p className="font-semibold">How it works</p>
+                    <ul className="list-disc list-inside space-y-0.5 text-indigo-300/80">
+                      <li>Member joins the selected voice channel</li>
+                      <li>Bot creates <code>⌛ {"<"}member name{">"}</code> in the same category, copying all permission overwrites</li>
+                      <li>Member is moved to their new channel and gets full control</li>
+                      <li>Channel is deleted automatically when the last person leaves</li>
+                    </ul>
+                    <p className="text-indigo-300/60 pt-1">
+                      Tip: Set "Connect" permission on the creation channel in Discord to control which roles can use this feature.
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* ── Default log channel ──────────────────────────────────────── */}
             <div className="p-5 rounded-xl border border-primary/30 bg-primary/5">
               <div className="flex items-center justify-between gap-4">
                 <div>
@@ -162,13 +231,13 @@ export default function ServerSettings() {
                 <ChannelSelect
                   value={defaultChannel}
                   onChange={setDefault}
-                  channels={textChannels}
+                  channels={filteredText}
                   placeholder="No default (disabled)"
                 />
               </div>
             </div>
 
-            {/* Per-category groups */}
+            {/* ── Per-category log channel groups ─────────────────────────── */}
             {CATEGORIES.map((category) => {
               const events = LOG_EVENTS.filter((e) => e.category === category);
               return (
@@ -193,7 +262,7 @@ export default function ServerSettings() {
                         <ChannelSelect
                           value={logChannels[event.key] ?? null}
                           onChange={(v) => setChannel(event.key, v)}
-                          channels={textChannels}
+                          channels={filteredText}
                           placeholder={defaultChannel ? "Use default" : "Disabled"}
                         />
                       </div>

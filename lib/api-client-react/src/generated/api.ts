@@ -30,6 +30,7 @@ import type {
   GuildDetail,
   GuildStats,
   HealthStatus,
+  ListGuildChannelsParams,
   ListGuildModerationParams,
   LogEntry,
   MemberHistoryPoint,
@@ -427,20 +428,29 @@ export function useGetGuild<TData = Awaited<ReturnType<typeof getGuild>>, TError
 
 
 
-export const getListGuildChannelsUrl = (guildId: string,) => {
+export const getListGuildChannelsUrl = (guildId: string,
+    params?: ListGuildChannelsParams,) => {
+  const normalizedParams = new URLSearchParams();
 
+  Object.entries(params || {}).forEach(([key, value]) => {
 
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
 
+  const stringifiedParams = normalizedParams.toString();
 
-  return `/api/guilds/${guildId}/channels`
+  return stringifiedParams.length > 0 ? `/api/guilds/${guildId}/channels?${stringifiedParams}` : `/api/guilds/${guildId}/channels`
 }
 
 /**
- * @summary List text channels in a guild
+ * @summary List channels in a guild, optionally filtered by Discord channel type
  */
-export const listGuildChannels = async (guildId: string, options?: RequestInit): Promise<Channel[]> => {
+export const listGuildChannels = async (guildId: string,
+    params?: ListGuildChannelsParams, options?: RequestInit): Promise<Channel[]> => {
 
-  return customFetch<Channel[]>(getListGuildChannelsUrl(guildId),
+  return customFetch<Channel[]>(getListGuildChannelsUrl(guildId,params),
   {
     ...options,
     method: 'GET'
@@ -453,23 +463,25 @@ export const listGuildChannels = async (guildId: string, options?: RequestInit):
 
 
 
-export const getListGuildChannelsQueryKey = (guildId: string,) => {
+export const getListGuildChannelsQueryKey = (guildId: string,
+    params?: ListGuildChannelsParams,) => {
     return [
-    `/api/guilds/${guildId}/channels`
+    `/api/guilds/${guildId}/channels`, ...(params ? [params] : [])
     ] as const;
     }
 
 
-export const getListGuildChannelsQueryOptions = <TData = Awaited<ReturnType<typeof listGuildChannels>>, TError = ErrorType<unknown>>(guildId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGuildChannels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+export const getListGuildChannelsQueryOptions = <TData = Awaited<ReturnType<typeof listGuildChannels>>, TError = ErrorType<unknown>>(guildId: string,
+    params?: ListGuildChannelsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGuildChannels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
 
-  const queryKey =  queryOptions?.queryKey ?? getListGuildChannelsQueryKey(guildId);
+  const queryKey =  queryOptions?.queryKey ?? getListGuildChannelsQueryKey(guildId,params);
 
 
 
-    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGuildChannels>>> = ({ signal }) => listGuildChannels(guildId, { signal, ...requestOptions });
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listGuildChannels>>> = ({ signal }) => listGuildChannels(guildId,params, { signal, ...requestOptions });
 
 
 
@@ -483,15 +495,16 @@ export type ListGuildChannelsQueryError = ErrorType<unknown>
 
 
 /**
- * @summary List text channels in a guild
+ * @summary List channels in a guild, optionally filtered by Discord channel type
  */
 
 export function useListGuildChannels<TData = Awaited<ReturnType<typeof listGuildChannels>>, TError = ErrorType<unknown>>(
- guildId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGuildChannels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+ guildId: string,
+    params?: ListGuildChannelsParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof listGuildChannels>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
 
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
-  const queryOptions = getListGuildChannelsQueryOptions(guildId,options)
+  const queryOptions = getListGuildChannelsQueryOptions(guildId,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

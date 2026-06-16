@@ -68,10 +68,14 @@ export const GetGuildResponse = zod.object({
 
 
 /**
- * @summary List text channels in a guild
+ * @summary List channels in a guild, optionally filtered by Discord channel type
  */
 export const ListGuildChannelsParams = zod.object({
   "guildId": zod.coerce.string()
+})
+
+export const ListGuildChannelsQueryParams = zod.object({
+  "type": zod.coerce.number().optional().describe('Discord channel type filter: 0=text, 2=voice, 5=announcement. Omit to get text+announcement.')
 })
 
 export const ListGuildChannelsResponseItem = zod.object({
@@ -117,6 +121,7 @@ export const GetGuildConfigResponse = zod.object({
   "server_update": zod.string().nullish(),
   "member_warn": zod.string().nullish()
 }),
+  "creationVoiceChannel": zod.string().nullish(),
   "updatedAt": zod.string().optional()
 })
 
@@ -154,7 +159,8 @@ export const UpdateGuildConfigBody = zod.object({
   "command_used": zod.string().nullish(),
   "server_update": zod.string().nullish(),
   "member_warn": zod.string().nullish()
-}).optional()
+}).optional(),
+  "creationVoiceChannel": zod.string().nullish()
 })
 
 export const UpdateGuildConfigResponse = zod.object({
@@ -185,6 +191,7 @@ export const UpdateGuildConfigResponse = zod.object({
   "server_update": zod.string().nullish(),
   "member_warn": zod.string().nullish()
 }),
+  "creationVoiceChannel": zod.string().nullish(),
   "updatedAt": zod.string().optional()
 })
 

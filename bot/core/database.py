@@ -1,5 +1,4 @@
 import asyncpg
-import os
 import logging
 from typing import Optional
 
@@ -114,3 +113,63 @@ async def track_message_event(
         is_bot,
         today,
     )
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Temp voice channel helpers
+# ──────────────────────────────────────────────────────────────────────────────
+
+async def get_creation_voice_channel(pool: asyncpg.Pool, guild_id: str) -> Optional[str]:
+    """Return the configured creation voice channel ID for this guild, or None."""
+    row = await pool.fetchrow(
+        "SELECT creation_voice_channel FROM guild_configs WHERE guild_id = $1",
+        guild_id,
+    )
+    return row["creation_voice_channel"] if row else None
+
+
+async def add_temp_channel(
+    pool: asyncpg.Pool,
+    channel_id: str,
+    guild_id: str,
+    owner_id: str,
+) -> None:
+    await pool.execute(
+        """
+        INSERT INTO temp_voice_channels (channel_id, guild_id, owner_id, created_at)
+        VALUES ($1, $2, $3, NOW())
+        ON CONFLICT (channel_id) DO NOTHING
+        """,
+        channel_id,
+        guild_id,
+        owner_id,
+    )
+
+
+async def remove_temp_channel(pool: asyncpg.Pool, channel_id: str) -> None:
+    await pool.execute(
+        "DELETE FROM temp_voice_channels WHERE channel_id = $1",
+        channel_id,
+    )
+
+
+async def is_temp_channel(pool: asyncpg.Pool, channel_id: str) -> bool:
+    row = await pool.fetchrow(
+        "SELECT 1 FROM temp_voice_channels WHERE channel_id = $1",
+        channel_id,
+    )
+    return row is not None
+
+
+async def get_temp_channel_owner(pool: asyncpg.Pool, channel_id: str) -> Optional[str]:
+    row = await pool.fetchrow(
+        "SELECT owner_id FROM temp_voice_channels WHERE channel_id = $1",
+        channel_id,
+    )
+    return row["owner_id"] if row else None
+
+
+async def get_all_temp_channels(pool: asyncpg.Pool) -> list[dict]:
+    """Return all tracked temp channels (used for startup cleanup)."""
+    rows = await pool.fetch("SELECT channel_id, guild_id, owner_id FROM temp_voice_channels")
+    return [dict(r) for r in rows]

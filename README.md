@@ -19,8 +19,8 @@ A self-hostable Discord moderation bot with a web-based admin dashboard. Written
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/bestfitcm120/replit-discord-bot
-cd modbot
+git clone https://github.com/bestfitcm120/discord-moderation-bot
+cd discord-moderation-bot
 
 # 2. Configure environment
 cp .env.example .env

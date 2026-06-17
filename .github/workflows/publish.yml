@@ -1,157 +1,127 @@
-name: Publish Docker Images
+name: GitHub Actions CI/CD — Discord Moderation Bot
 
 on:
   push:
     tags:
       - 'v*'
 
-permissions:
-  contents: read
-  packages: write
-
 env:
   REGISTRY: ghcr.io
-  OWNER: ${{ github.repository_owner }}
-  VERSION: ${{ github.ref_name }}
+  # GitHub packages use lowercase repository paths
+  BOT_IMAGE: ghcr.io/${{ github.repository }}/bot
+  WEB_IMAGE: ghcr.io/${{ github.repository }}/web
 
 jobs:
-  publish-bot:
-    name: Publish Bot Image
+  # ── Publish Stage ────────────────────────────────────────────────────────────
+  publish:
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: read
+      packages: write
     steps:
-      - name: Checkout Repository
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Login to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
+          registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull Existing Cache
-        run: |
-          docker pull ghcr.io/${OWNER}/bot:latest || true
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build Bot Image
-        run: |
-          docker build \
-            --cache-from ghcr.io/${OWNER}/bot:latest \
-            -f Dockerfile.bot \
-            -t ghcr.io/${OWNER}/bot:${VERSION} \
-            -t ghcr.io/${OWNER}/bot:latest \
-            .
-
-      - name: Push Bot Image
-        run: |
-          docker push ghcr.io/${OWNER}/bot:${VERSION}
-          docker push ghcr.io/${OWNER}/bot:latest
-
-  publish-web:
-    name: Publish Web Image
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Login to GHCR
-        uses: docker/login-action@v3
+      # Build and Push Bot Image
+      - name: Build and push Bot image
+        uses: docker/build-push-action@v6
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          context: .
+          file: Dockerfile.bot
+          push: true
+          tags: |
+            ${{ env.BOT_IMAGE }}:${{ github.ref_name }}
+            ${{ env.BOT_IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.BOT_IMAGE }}:latest
+          cache-to: type=inline
 
-      - name: Pull Existing Cache
-        run: |
-          docker pull ghcr.io/${OWNER}/web:latest || true
+      # Build and Push Web Image
+      - name: Build and push Web image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.web
+          push: true
+          tags: |
+            ${{ env.WEB_IMAGE }}:${{ github.ref_name }}
+            ${{ env.WEB_IMAGE }}:latest
+          cache-from: type=registry,ref=${{ env.WEB_IMAGE }}:latest
+          cache-to: type=inline
 
-      - name: Build Web Image
-        run: |
-          docker build \
-            --cache-from ghcr.io/${OWNER}/web:latest \
-            -f Dockerfile.web \
-            -t ghcr.io/${OWNER}/web:${VERSION} \
-            -t ghcr.io/${OWNER}/web:latest \
-            .
-
-      - name: Push Web Image
-        run: |
-          docker push ghcr.io/${OWNER}/web:${VERSION}
-          docker push ghcr.io/${OWNER}/web:latest
-
+  # ── Cleanup Stage ────────────────────────────────────────────────────────────
   cleanup:
-    name: Cleanup Old Versions
     runs-on: ubuntu-latest
-
-    needs:
-      - publish-bot
-      - publish-web
-
+    needs: publish
+    permissions:
+      packages: write
     steps:
-      - name: Cleanup Bot Versions
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api \
-            "/users/${OWNER}/packages/container/bot/versions?per_page=100" \
-            > bot_versions.json
+      - name: Clean up old container tags
+        uses: actions/github-script@v7
+        with:
+          # Uses the implicit GITHUB_TOKEN provided by the runner
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const owner = context.repo.owner;
+            // Extract the repo name (ensuring it matches GHCR lowercase conventions)
+            const repoName = context.repo.repo.toLowerCase();
+            const currentTag = context.ref.replace('refs/tags/', '');
+            const targetPackages = ['bot', 'web'];
 
-          jq -c '.[]' bot_versions.json | while read VERSION_DATA; do
+            for (const subPackage of targetPackages) {
+              const packageName = `${repoName}/${subPackage}`;
+              console.log(`Checking tags for package: ${packageName}`);
 
-            ID=$(echo "$VERSION_DATA" | jq -r '.id')
+              try {
+                // Fetch all versions/tags for the container package
+                const { data: versions } = await github.rest.packages.getAllPackageVersionsForPackageOwnedByOrg({
+                  package_type: 'container',
+                  package_name: packageName,
+                  org: owner
+                }).catch(() => {
+                  // Fallback for user accounts if not inside an organization
+                  return github.rest.packages.getAllPackageVersionsForPackageOwnedByUser({
+                    package_type: 'container',
+                    package_name: packageName,
+                    username: owner
+                  });
+                });
 
-            TAGS=$(echo "$VERSION_DATA" \
-              | jq -r '.metadata.container.tags[]?')
+                for (const version of versions) {
+                  const tags = version.metadata.container.tags;
+                  
+                  // If a version has no tags or contains a tag we want to keep, skip deletion
+                  if (!tags || tags.includes('latest') || tags.includes(currentTag)) {
+                    console.log(`  Keeping version ID ${version.id} with tags: ${tags ? tags.join(', ') : 'none'}`);
+                    continue;
+                  }
 
-            KEEP=false
-
-            for TAG in $TAGS; do
-              if [ "$TAG" = "latest" ] || [ "$TAG" = "${VERSION}" ]; then
-                KEEP=true
-              fi
-            done
-
-            if [ "$KEEP" = "false" ]; then
-              echo "Deleting bot version ID $ID"
-
-              gh api \
-                --method DELETE \
-                "/user/packages/container/bot/versions/$ID" \
-                || true
-            fi
-          done
-
-      - name: Cleanup Web Versions
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh api \
-            "/users/${OWNER}/packages/container/web/versions?per_page=100" \
-            > web_versions.json
-
-          jq -c '.[]' web_versions.json | while read VERSION_DATA; do
-
-            ID=$(echo "$VERSION_DATA" | jq -r '.id')
-
-            TAGS=$(echo "$VERSION_DATA" \
-              | jq -r '.metadata.container.tags[]?')
-
-            KEEP=false
-
-            for TAG in $TAGS; do
-              if [ "$TAG" = "latest" ] || [ "$TAG" = "${VERSION}" ]; then
-                KEEP=true
-              fi
-            done
-
-            if [ "$KEEP" = "false" ]; then
-              echo "Deleting web version ID $ID"
-
-              gh api \
-                --method DELETE \
-                "/user/packages/container/web/versions/$ID" \
-                || true
-            fi
-          done
+                  console.log(`  Deleting old version ID ${version.id} with tags: ${tags.join(', ')}`);
+                  
+                  await github.rest.packages.deletePackageVersionForOrg({
+                    package_type: 'container',
+                    package_name: packageName,
+                    org: owner,
+                    package_version_id: version.id
+                  }).catch(() => {
+                    return github.rest.packages.deletePackageVersionForUser({
+                      package_type: 'container',
+                      package_name: packageName,
+                      username: owner,
+                      package_version_id: version.id
+                    });
+                  });
+                }
+              } catch (error) {
+                console.log(`Could not process package ${packageName}: ${error.message}`);
+              }
+            }

@@ -29,10 +29,14 @@ async def get_guild_config(guild_id: str, request: Request):
             "updatedAt": None,
         }
 
+    log_channels = row["log_channels"]
+    if isinstance(log_channels, str):
+        log_channels = json.loads(log_channels)
+
     return {
         "guildId": row["guild_id"],
         "defaultLogChannel": row["default_log_channel"],
-        "logChannels": dict(row["log_channels"]),
+        "logChannels": log_channels or {},
         "updatedAt": row["updated_at"].isoformat() if row["updated_at"] else None,
     }
 

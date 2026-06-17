@@ -1,5 +1,6 @@
 import asyncpg
 import os
+import json
 import logging
 from contextlib import asynccontextmanager
 from typing import Optional
@@ -9,12 +10,16 @@ logger = logging.getLogger(__name__)
 
 _pool: Optional[asyncpg.Pool] = None
 
+async def _init_connection(conn):
+    await conn.set_type_codec("jsonb", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
+    await conn.set_type_codec("json", encoder=json.dumps, decoder=json.loads, schema="pg_catalog")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global _pool
     database_url = os.environ.get("DATABASE_URL", "")
-    _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20)
+    _pool = await asyncpg.create_pool(database_url, min_size=2, max_size=20, init=_init_connection)
     logger.info("Database pool created")
     await _ensure_schema(_pool)
     yield

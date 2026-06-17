@@ -1,3 +1,6 @@
+# **IGNORE THIS PIPELINE DOCUMENTATION ITS OUTDATED**
+# the pipeline itself works (for gitlab ci/cd and github actions) the documentation itself is outdated
+
 # GitLab CE CI/CD Pipeline
 
 This document explains every part of `.gitlab-ci.yml`.
@@ -103,7 +106,7 @@ This keeps the registry clean by removing intermediate build tags automatically.
 | Variable | Value |
 |---|---|
 | `CI_REGISTRY` | Your GitLab instance's registry hostname |
-| `CI_REGISTRY_IMAGE` | The project's registry image path, e.g. `registry.gitlab.example.com/group/repo` |
+| `CI_REGISTRY_IMAGE` | The project's registry image path |
 | `CI_REGISTRY_USER` | Username for pushing to the registry |
 | `CI_REGISTRY_PASSWORD` | Password for pushing |
 | `CI_COMMIT_TAG` | The Git tag name, e.g. `v1.2.3` |

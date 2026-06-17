@@ -19,7 +19,7 @@ A self-hostable Discord moderation bot with a web-based admin dashboard. Written
 
 ```bash
 # 1. Clone the repo
-git clone https://github.com/your-username/modbot.git
+git clone https://github.com/bestfitcm120/replit-discord-bot
 cd modbot
 
 # 2. Configure environment
@@ -123,4 +123,4 @@ See [.env.example](.env.example) for a complete list with descriptions.
 
 ## License
 
-MIT
+[CC BY-NC-SA](LICENSE)

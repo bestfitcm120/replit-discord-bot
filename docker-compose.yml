@@ -30,11 +30,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - discord-bot-network
 
   bot:
-    build:
-      context: .
-      dockerfile: Dockerfile.bot
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.bot
+    image: ghcr.io/bestfitcm120/discord-moderation-bot/bot:latest
     restart: unless-stopped
     depends_on:
       postgres:
@@ -44,11 +47,14 @@ services:
       DATABASE_URL:   postgresql://${POSTGRES_USER:-modbot}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-modbot}
       BOT_PREFIX:     ${BOT_PREFIX:-!}
       WEB_API_URL:    http://web:8000
+    networks:
+      - discord-bot-network
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile.web
+    image: docker pull ghcr.io/bestfitcm120/discord-moderation-bot/web:latest
     restart: unless-stopped
     ports:
       - "8000:8000"
@@ -64,6 +70,13 @@ services:
       BASE_URL:               ${BASE_URL:-http://localhost:8000}
       DISCORD_BOT_PERMISSIONS: ${DISCORD_BOT_PERMISSIONS:-8}
       CORS_ORIGINS:           ${BASE_URL:-http://localhost:8000}
+    networks:
+      - discord-bot-network
 
 volumes:
   postgres_data:
+
+networks:
+  discord-bot-network:
+    driver: bridge
+

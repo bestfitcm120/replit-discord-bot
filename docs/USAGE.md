@@ -56,19 +56,19 @@ Instead of building locally, you can pull the images directly from the GitLab Co
 
 ```bash
 # Pull the latest versions
-docker pull ghcr.io/bestfitcm120/replit-discord-bot/bot:latest
-docker pull ghcr.io/bestfitcm120/replit-discord-bot/web:latest
+docker pull ghcr.io/bestfitcm120/discord-moderation-bot/bot:latest
+docker pull ghcr.io/bestfitcm120/discord-moderation-bot/web:latest
 ```
 
 Then update `docker-compose.yml` to reference the registry images instead of building:
 
 ```yaml
 bot:
-  image: ghcr.io/bestfitcm120/replit-discord-bot/bot:latest
+  image: hcr.io/bestfitcm120/discord-moderation-bot/bot:latest
   # remove: build: ...
 
 web:
-  image: ghcr.io/bestfitcm120/replit-discord-bot/web:latest
+  image: ghcr.io/bestfitcm120/discord-moderation-bot/web:latest
   # remove: build: ...
 ```
 

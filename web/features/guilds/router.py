@@ -57,11 +57,11 @@ async def _fetch_guild_channels(guild_id: str) -> list:
             if resp.status != 200:
                 return []
             channels = await resp.json()
-            # Return only text channels (type 0) and announcement channels (type 5)
+            # Return only text channels (type 0), voice channels (type 2) and announcement channels (type 5)
             return [
                 {"id": c["id"], "name": c["name"], "type": c["type"]}
                 for c in channels
-                if c["type"] in (0, 5)
+                if c["type"] in (0, 2, 5)
             ]
 
 

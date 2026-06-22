@@ -182,6 +182,9 @@ export interface LevelingConfigInput {
 
 export interface LeaderboardEntry {
   userId: string;
+  username?: string | null;
+  displayName?: string | null;
+  avatarUrl?: string | null;
   xp: number;
   level: number;
   rank: number;

@@ -703,6 +703,15 @@ components:
       properties:
         userId:
           type: string
+        username:
+          type: string
+          nullable: true
+        displayName:
+          type: string
+          nullable: true
+        avatarUrl:
+          type: string
+          nullable: true
         xp:
           type: integer
         level:

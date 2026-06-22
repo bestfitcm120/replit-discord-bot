@@ -33,6 +33,19 @@ async def _fetch_user_guilds(access_token: str) -> list:
             return await resp.json()
 
 
+async def _fetch_discord_user(user_id: str) -> Optional[dict]:
+    """Fetch a Discord user object by ID using the bot token."""
+    bot_token = os.environ.get("DISCORD_BOT_TOKEN", "")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(
+            f"{DISCORD_API}/users/{user_id}",
+            headers={"Authorization": f"Bot {bot_token}"},
+        ) as resp:
+            if resp.status != 200:
+                return None
+            return await resp.json()
+
+
 async def _fetch_bot_guilds() -> set:
     """Return set of guild IDs the bot is in."""
     bot_token = os.environ.get("DISCORD_BOT_TOKEN", "")
@@ -363,7 +376,26 @@ async def get_leaderboard_route(guild_id: str, request: Request, category: str =
             guild_id,
         )
 
-    return [
-        {"userId": r["user_id"], "xp": r["xp"], "level": r["level"], "rank": i + 1}
-        for i, r in enumerate(rows)
-    ]
+    import asyncio
+
+    async def enrich(i: int, r):
+        user = await _fetch_discord_user(r["user_id"])
+        avatar_url = None
+        if user and user.get("avatar"):
+            avatar_url = f"https://cdn.discordapp.com/avatars/{user['id']}/{user['avatar']}.png?size=64"
+        username = None
+        display_name = None
+        if user:
+            username = user.get("username")
+            display_name = user.get("global_name") or user.get("username")
+        return {
+            "userId": r["user_id"],
+            "username": username,
+            "displayName": display_name,
+            "avatarUrl": avatar_url,
+            "xp": r["xp"],
+            "level": r["level"],
+            "rank": i + 1,
+        }
+
+    return await asyncio.gather(*[enrich(i, r) for i, r in enumerate(rows)])

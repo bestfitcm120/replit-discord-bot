@@ -117,6 +117,26 @@ function xpForLevel(level: number): number {
 
 const RANK_MEDALS = ["🥇", "🥈", "🥉"];
 
+function MemberCell({ entry }: { entry: { userId: string; username?: string | null; displayName?: string | null; avatarUrl?: string | null } }) {
+  const name = entry.displayName ?? entry.username ?? entry.userId;
+  const sub = entry.username && entry.username !== entry.displayName ? `@${entry.username}` : null;
+  return (
+    <div className="flex items-center gap-2.5">
+      {entry.avatarUrl ? (
+        <img src={entry.avatarUrl} alt="" className="w-8 h-8 rounded-full flex-shrink-0 object-cover" />
+      ) : (
+        <div className="w-8 h-8 rounded-full bg-secondary border border-border flex-shrink-0 flex items-center justify-center text-xs text-muted-foreground font-medium">
+          {name.slice(0, 1).toUpperCase()}
+        </div>
+      )}
+      <div className="min-w-0">
+        <div className="text-sm font-medium text-foreground truncate">{name}</div>
+        {sub && <div className="text-xs text-muted-foreground truncate">{sub}</div>}
+      </div>
+    </div>
+  );
+}
+
 export default function ServerLeveling() {
   const [, params] = useRoute("/servers/:guildId/leveling");
   const guildId = params?.guildId ?? "";
@@ -392,7 +412,7 @@ export default function ServerLeveling() {
               <thead>
                 <tr className="border-b border-border bg-secondary/30">
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Rank</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">User ID</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Member</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Level</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">XP</th>
                 </tr>
@@ -419,7 +439,7 @@ export default function ServerLeveling() {
                         {RANK_MEDALS[entry.rank - 1] ?? `#${entry.rank}`}
                       </td>
                       <td className="px-4 py-3">
-                        <code className="text-xs font-mono text-foreground/80">{entry.userId}</code>
+                        <MemberCell entry={entry} />
                       </td>
                       <td className="px-4 py-3 text-primary font-semibold">{entry.level}</td>
                       <td className="px-4 py-3 text-muted-foreground">{entry.xp.toLocaleString()}</td>
@@ -438,7 +458,7 @@ export default function ServerLeveling() {
               <thead>
                 <tr className="border-b border-border bg-secondary/30">
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Rank</th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">User ID</th>
+                  <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Member</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">Level</th>
                   <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wide">XP</th>
                 </tr>
@@ -465,7 +485,7 @@ export default function ServerLeveling() {
                         {RANK_MEDALS[entry.rank - 1] ?? `#${entry.rank}`}
                       </td>
                       <td className="px-4 py-3">
-                        <code className="text-xs font-mono text-foreground/80">{entry.userId}</code>
+                        <MemberCell entry={entry} />
                       </td>
                       <td className="px-4 py-3 text-primary font-semibold">{entry.level}</td>
                       <td className="px-4 py-3 text-muted-foreground">{entry.xp.toLocaleString()}</td>

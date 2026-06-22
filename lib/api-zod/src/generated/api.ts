@@ -372,6 +372,9 @@ export const GetLeaderboardQueryParams = zod.object({
 
 export const GetLeaderboardResponseItem = zod.object({
   "userId": zod.string(),
+  "username": zod.string().nullish(),
+  "displayName": zod.string().nullish(),
+  "avatarUrl": zod.string().nullish(),
   "xp": zod.number(),
   "level": zod.number(),
   "rank": zod.number()

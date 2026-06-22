@@ -52,9 +52,22 @@ class ModerationBot(commands.Bot):
                 name=f"{len(self.guilds)} servers",
             )
         )
+        for guild in self.guilds:
+            try:
+                self.tree.copy_global_to(guild=guild)
+                await self.tree.sync(guild=guild)
+                logger.info(f"Synced commands to guild: {guild.name} ({guild.id})")
+            except Exception as e:
+                logger.warning(f"Failed to sync commands to guild {guild.id}: {e}")
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         logger.info(f"Joined guild: {guild.name} (ID: {guild.id})")
+        try:
+            self.tree.copy_global_to(guild=guild)
+            await self.tree.sync(guild=guild)
+            logger.info(f"Synced commands to new guild: {guild.name} ({guild.id})")
+        except Exception as e:
+            logger.warning(f"Failed to sync commands to new guild {guild.id}: {e}")
 
     async def on_guild_remove(self, guild: discord.Guild) -> None:
         logger.info(f"Left guild: {guild.name} (ID: {guild.id})")

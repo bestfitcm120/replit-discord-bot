@@ -255,9 +255,7 @@ class LevelingCog(commands.Cog, name="Leveling"):
             lines = []
             for i, row in enumerate(rows):
                 medal = medals[i] if i < len(medals) else f"**#{i + 1}**"
-                member = guild.get_member(int(row["user_id"]))
-                name = member.display_name if member else f"<@{row['user_id']}>"
-                lines.append(f"{medal} {name}\nLvl **{row[level_key]}** • {row[xp_key]:,} XP")
+                lines.append(f"{medal} <@{row['user_id']}>\nLvl **{row[level_key]}** • {row[xp_key]:,} XP")
             return "\n".join(lines)
 
         embed = discord.Embed(

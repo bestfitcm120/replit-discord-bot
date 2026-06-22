@@ -159,6 +159,34 @@ export interface LogEntry {
   createdAt: string;
 }
 
+export interface LevelingConfig {
+  guildId: string;
+  textXpMin: number;
+  textXpMax: number;
+  textXpCooldown: number;
+  voiceXpPerMinute: number;
+  /** @nullable */
+  levelupChannelId?: string | null;
+  levelupMessageEnabled: boolean;
+}
+
+export interface LevelingConfigInput {
+  textXpMin?: number;
+  textXpMax?: number;
+  textXpCooldown?: number;
+  voiceXpPerMinute?: number;
+  /** @nullable */
+  levelupChannelId?: string | null;
+  levelupMessageEnabled?: boolean;
+}
+
+export interface LeaderboardEntry {
+  userId: string;
+  xp: number;
+  level: number;
+  rank: number;
+}
+
 export interface BotInvite {
   url: string;
 }
@@ -176,4 +204,19 @@ export type ListGuildModerationParams = {
  */
 userId?: string;
 };
+
+export type GetLeaderboardParams = {
+/**
+ * Which leaderboard: text (default) or voice
+ */
+category?: GetLeaderboardCategory;
+};
+
+export type GetLeaderboardCategory = typeof GetLeaderboardCategory[keyof typeof GetLeaderboardCategory];
+
+
+export const GetLeaderboardCategory = {
+  text: 'text',
+  voice: 'voice',
+} as const;
 

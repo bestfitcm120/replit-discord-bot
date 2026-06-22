@@ -1,10 +1,13 @@
 import discord
 from typing import List
 
+from bot.utils.audit import get_audit_executor, executor_field
+
 
 class ServerEventHandlers:
     @staticmethod
     async def server_update(before: discord.Guild, after: discord.Guild) -> discord.Embed:
+        executor = await get_audit_executor(after, discord.AuditLogAction.guild_update)
         changes: List[str] = []
 
         if before.name != after.name:
@@ -33,6 +36,7 @@ class ServerEventHandlers:
             embed.add_field(name="Changes", value="\n".join(changes), inline=False)
         else:
             embed.description = "Server settings were updated (non-tracked field changed)."
+        embed.add_field(name="Updated by", value=executor_field(executor), inline=False)
         embed.set_footer(text=f"Guild ID: {after.id}")
         embed.timestamp = discord.utils.utcnow()
         return embed

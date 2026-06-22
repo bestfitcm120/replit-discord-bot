@@ -1,5 +1,6 @@
 import asyncpg
 import logging
+import math
 from typing import Optional
 
 logger = logging.getLogger(__name__)
@@ -23,8 +24,6 @@ async def _ensure_schema(pool: asyncpg.Pool) -> None:
     every startup against both fresh and existing databases.
     """
     async with pool.acquire() as conn:
-        # ── Core tables (created by Drizzle on first dev push, but production
-        #    Docker databases may be initialised without running the Node toolchain)
         await conn.execute("""
             CREATE TABLE IF NOT EXISTS guild_configs (
                 guild_id             TEXT PRIMARY KEY,
@@ -79,8 +78,34 @@ async def _ensure_schema(pool: asyncpg.Pool) -> None:
             )
         """)
 
-        # ── Column additions for databases that existed before these fields
-        #    were added (ALTER TABLE ... ADD COLUMN IF NOT EXISTS is idempotent)
+        # Leveling system tables
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS member_xp (
+                guild_id        TEXT NOT NULL,
+                user_id         TEXT NOT NULL,
+                text_xp         BIGINT NOT NULL DEFAULT 0,
+                voice_xp        BIGINT NOT NULL DEFAULT 0,
+                text_level      INTEGER NOT NULL DEFAULT 0,
+                voice_level     INTEGER NOT NULL DEFAULT 0,
+                last_message_at TIMESTAMPTZ,
+                PRIMARY KEY (guild_id, user_id)
+            )
+        """)
+
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS leveling_config (
+                guild_id                TEXT PRIMARY KEY,
+                text_xp_min             INTEGER NOT NULL DEFAULT 15,
+                text_xp_max             INTEGER NOT NULL DEFAULT 25,
+                text_xp_cooldown        INTEGER NOT NULL DEFAULT 60,
+                voice_xp_per_minute     INTEGER NOT NULL DEFAULT 10,
+                levelup_channel_id      TEXT,
+                levelup_message_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+                updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            )
+        """)
+
+        # Column additions for older databases
         await conn.execute("""
             ALTER TABLE guild_configs
                 ADD COLUMN IF NOT EXISTS creation_voice_channel TEXT
@@ -98,10 +123,6 @@ async def close_pool() -> None:
 
 
 async def get_log_channel(pool: asyncpg.Pool, guild_id: str, event_type: str) -> Optional[str]:
-    """
-    Returns the channel ID for a given event type.
-    Falls back to the default log channel if no specific channel is set.
-    """
     row = await pool.fetchrow(
         """
         SELECT
@@ -194,7 +215,6 @@ async def track_message_event(
 # ──────────────────────────────────────────────────────────────────────────────
 
 async def get_creation_voice_channel(pool: asyncpg.Pool, guild_id: str) -> Optional[str]:
-    """Return the configured creation voice channel ID for this guild, or None."""
     row = await pool.fetchrow(
         "SELECT creation_voice_channel FROM guild_configs WHERE guild_id = $1",
         guild_id,
@@ -244,6 +264,231 @@ async def get_temp_channel_owner(pool: asyncpg.Pool, channel_id: str) -> Optiona
 
 
 async def get_all_temp_channels(pool: asyncpg.Pool) -> list[dict]:
-    """Return all tracked temp channels (used for startup cleanup)."""
     rows = await pool.fetch("SELECT channel_id, guild_id, owner_id FROM temp_voice_channels")
     return [dict(r) for r in rows]
+
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Leveling helpers
+# ──────────────────────────────────────────────────────────────────────────────
+
+def xp_for_level(level: int) -> int:
+    """Total XP required to reach a given level from 0."""
+    return 100 * level * (level + 1) // 2
+
+
+def level_from_xp(xp: int) -> int:
+    """Compute level from total XP using quadratic formula."""
+    if xp <= 0:
+        return 0
+    return int((-1 + math.sqrt(1 + 8 * xp / 100)) / 2)
+
+
+async def get_leveling_config(pool: asyncpg.Pool, guild_id: str) -> dict:
+    row = await pool.fetchrow(
+        "SELECT * FROM leveling_config WHERE guild_id = $1",
+        guild_id,
+    )
+    if row:
+        return dict(row)
+    return {
+        "guild_id": guild_id,
+        "text_xp_min": 15,
+        "text_xp_max": 25,
+        "text_xp_cooldown": 60,
+        "voice_xp_per_minute": 10,
+        "levelup_channel_id": None,
+        "levelup_message_enabled": True,
+    }
+
+
+async def upsert_leveling_config(pool: asyncpg.Pool, guild_id: str, **kwargs) -> dict:
+    config = await get_leveling_config(pool, guild_id)
+    config.update(kwargs)
+    await pool.execute(
+        """
+        INSERT INTO leveling_config (
+            guild_id, text_xp_min, text_xp_max, text_xp_cooldown,
+            voice_xp_per_minute, levelup_channel_id, levelup_message_enabled, updated_at
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())
+        ON CONFLICT (guild_id) DO UPDATE SET
+            text_xp_min             = EXCLUDED.text_xp_min,
+            text_xp_max             = EXCLUDED.text_xp_max,
+            text_xp_cooldown        = EXCLUDED.text_xp_cooldown,
+            voice_xp_per_minute     = EXCLUDED.voice_xp_per_minute,
+            levelup_channel_id      = EXCLUDED.levelup_channel_id,
+            levelup_message_enabled = EXCLUDED.levelup_message_enabled,
+            updated_at              = NOW()
+        """,
+        guild_id,
+        config["text_xp_min"],
+        config["text_xp_max"],
+        config["text_xp_cooldown"],
+        config["voice_xp_per_minute"],
+        config.get("levelup_channel_id"),
+        config["levelup_message_enabled"],
+    )
+    return config
+
+
+async def add_text_xp(
+    pool: asyncpg.Pool,
+    guild_id: str,
+    user_id: str,
+    xp: int,
+    cooldown_seconds: int,
+) -> Optional[dict]:
+    """
+    Award text XP to a user respecting cooldown.
+    Returns a dict with old_level and new_level if XP was awarded, else None.
+    """
+    import json
+    row = await pool.fetchrow(
+        """
+        SELECT text_xp, text_level, last_message_at
+        FROM member_xp
+        WHERE guild_id = $1 AND user_id = $2
+        """,
+        guild_id,
+        user_id,
+    )
+
+    import datetime
+    now = datetime.datetime.now(datetime.timezone.utc)
+
+    if row:
+        if row["last_message_at"]:
+            elapsed = (now - row["last_message_at"]).total_seconds()
+            if elapsed < cooldown_seconds:
+                return None
+        old_xp = row["text_xp"]
+        old_level = row["text_level"]
+    else:
+        old_xp = 0
+        old_level = 0
+
+    new_xp = old_xp + xp
+    new_level = level_from_xp(new_xp)
+
+    await pool.execute(
+        """
+        INSERT INTO member_xp (guild_id, user_id, text_xp, text_level, last_message_at)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (guild_id, user_id) DO UPDATE SET
+            text_xp = EXCLUDED.text_xp,
+            text_level = EXCLUDED.text_level,
+            last_message_at = EXCLUDED.last_message_at
+        """,
+        guild_id,
+        user_id,
+        new_xp,
+        new_level,
+        now,
+    )
+
+    return {"old_level": old_level, "new_level": new_level, "xp": new_xp}
+
+
+async def add_voice_xp(
+    pool: asyncpg.Pool,
+    guild_id: str,
+    user_id: str,
+    xp: int,
+) -> Optional[dict]:
+    """
+    Award voice XP to a user.
+    Returns dict with old_level and new_level.
+    """
+    row = await pool.fetchrow(
+        "SELECT voice_xp, voice_level FROM member_xp WHERE guild_id = $1 AND user_id = $2",
+        guild_id,
+        user_id,
+    )
+    old_xp = row["voice_xp"] if row else 0
+    old_level = row["voice_level"] if row else 0
+    new_xp = old_xp + xp
+    new_level = level_from_xp(new_xp)
+
+    await pool.execute(
+        """
+        INSERT INTO member_xp (guild_id, user_id, voice_xp, voice_level)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (guild_id, user_id) DO UPDATE SET
+            voice_xp = EXCLUDED.voice_xp,
+            voice_level = EXCLUDED.voice_level
+        """,
+        guild_id,
+        user_id,
+        new_xp,
+        new_level,
+    )
+    return {"old_level": old_level, "new_level": new_level, "xp": new_xp}
+
+
+async def get_user_xp(pool: asyncpg.Pool, guild_id: str, user_id: str) -> dict:
+    row = await pool.fetchrow(
+        "SELECT text_xp, voice_xp, text_level, voice_level FROM member_xp WHERE guild_id = $1 AND user_id = $2",
+        guild_id,
+        user_id,
+    )
+    if row:
+        return dict(row)
+    return {"text_xp": 0, "voice_xp": 0, "text_level": 0, "voice_level": 0}
+
+
+async def get_text_leaderboard(pool: asyncpg.Pool, guild_id: str, limit: int = 10) -> list:
+    rows = await pool.fetch(
+        """
+        SELECT user_id, text_xp, text_level
+        FROM member_xp
+        WHERE guild_id = $1
+        ORDER BY text_xp DESC
+        LIMIT $2
+        """,
+        guild_id,
+        limit,
+    )
+    return [dict(r) for r in rows]
+
+
+async def get_voice_leaderboard(pool: asyncpg.Pool, guild_id: str, limit: int = 10) -> list:
+    rows = await pool.fetch(
+        """
+        SELECT user_id, voice_xp, voice_level
+        FROM member_xp
+        WHERE guild_id = $1
+        ORDER BY voice_xp DESC
+        LIMIT $2
+        """,
+        guild_id,
+        limit,
+    )
+    return [dict(r) for r in rows]
+
+
+async def get_user_text_rank(pool: asyncpg.Pool, guild_id: str, user_id: str) -> int:
+    row = await pool.fetchrow(
+        """
+        SELECT COUNT(*) + 1 AS rank
+        FROM member_xp
+        WHERE guild_id = $1
+          AND text_xp > (SELECT COALESCE(text_xp, 0) FROM member_xp WHERE guild_id = $1 AND user_id = $2)
+        """,
+        guild_id,
+        user_id,
+    )
+    return row["rank"] if row else 1
+
+
+async def get_user_voice_rank(pool: asyncpg.Pool, guild_id: str, user_id: str) -> int:
+    row = await pool.fetchrow(
+        """
+        SELECT COUNT(*) + 1 AS rank
+        FROM member_xp
+        WHERE guild_id = $1
+          AND voice_xp > (SELECT COALESCE(voice_xp, 0) FROM member_xp WHERE guild_id = $1 AND user_id = $2)
+        """,
+        guild_id,
+        user_id,
+    )
+    return row["rank"] if row else 1

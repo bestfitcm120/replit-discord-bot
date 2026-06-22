@@ -32,10 +32,11 @@ async def _ensure_schema(pool: asyncpg.Pool) -> None:
     """Create tables if they don't exist yet."""
     await pool.execute("""
         CREATE TABLE IF NOT EXISTS guild_configs (
-            guild_id        TEXT PRIMARY KEY,
-            default_log_channel TEXT,
-            log_channels    JSONB NOT NULL DEFAULT '{}',
-            updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
+            guild_id               TEXT PRIMARY KEY,
+            default_log_channel    TEXT,
+            log_channels           JSONB NOT NULL DEFAULT '{}',
+            creation_voice_channel TEXT,
+            updated_at             TIMESTAMPTZ NOT NULL DEFAULT NOW()
         );
 
         CREATE TABLE IF NOT EXISTS log_entries (
@@ -74,7 +75,45 @@ async def _ensure_schema(pool: asyncpg.Pool) -> None:
         );
 
         CREATE INDEX IF NOT EXISTS message_stats_guild_date_idx ON message_stats(guild_id, stat_date);
+
+        CREATE TABLE IF NOT EXISTS temp_voice_channels (
+            channel_id  TEXT PRIMARY KEY,
+            guild_id    TEXT NOT NULL,
+            owner_id    TEXT NOT NULL,
+            created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
+
+        CREATE TABLE IF NOT EXISTS member_xp (
+            guild_id        TEXT NOT NULL,
+            user_id         TEXT NOT NULL,
+            text_xp         BIGINT NOT NULL DEFAULT 0,
+            voice_xp        BIGINT NOT NULL DEFAULT 0,
+            text_level      INTEGER NOT NULL DEFAULT 0,
+            voice_level     INTEGER NOT NULL DEFAULT 0,
+            last_message_at TIMESTAMPTZ,
+            PRIMARY KEY (guild_id, user_id)
+        );
+
+        CREATE INDEX IF NOT EXISTS member_xp_guild_text_idx ON member_xp(guild_id, text_xp DESC);
+        CREATE INDEX IF NOT EXISTS member_xp_guild_voice_idx ON member_xp(guild_id, voice_xp DESC);
+
+        CREATE TABLE IF NOT EXISTS leveling_config (
+            guild_id                TEXT PRIMARY KEY,
+            text_xp_min             INTEGER NOT NULL DEFAULT 15,
+            text_xp_max             INTEGER NOT NULL DEFAULT 25,
+            text_xp_cooldown        INTEGER NOT NULL DEFAULT 60,
+            voice_xp_per_minute     INTEGER NOT NULL DEFAULT 10,
+            levelup_channel_id      TEXT,
+            levelup_message_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+            updated_at              TIMESTAMPTZ NOT NULL DEFAULT NOW()
+        );
     """)
+
+    # Add missing columns to older databases
+    await pool.execute("""
+        ALTER TABLE guild_configs ADD COLUMN IF NOT EXISTS creation_voice_channel TEXT;
+    """)
+
     logger.info("Database schema ensured")
 
 

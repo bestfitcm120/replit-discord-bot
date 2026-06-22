@@ -8,6 +8,8 @@ import ServerList from "@/pages/server-list";
 import ServerOverview from "@/pages/server-overview";
 import ServerSettings from "@/pages/server-settings";
 import ServerModeration from "@/pages/server-moderation";
+import ServerVoice from "@/pages/server-voice";
+import ServerLeveling from "@/pages/server-leveling";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient({
@@ -34,6 +36,8 @@ function Router() {
       <Route path="/servers/:guildId" component={ServerOverview} />
       <Route path="/servers/:guildId/settings" component={ServerSettings} />
       <Route path="/servers/:guildId/moderation" component={ServerModeration} />
+      <Route path="/servers/:guildId/voice" component={ServerVoice} />
+      <Route path="/servers/:guildId/leveling" component={ServerLeveling} />
       <Route component={NotFound} />
     </Switch>
   );

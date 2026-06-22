@@ -17,6 +17,8 @@ tags:
     description: Bot configuration per guild
   - name: stats
     description: Guild statistics
+  - name: leveling
+    description: XP and leveling system
 paths:
   /healthz:
     get:
@@ -319,6 +321,76 @@ paths:
                 items:
                   $ref: "#/components/schemas/LogEntry"
 
+  /guilds/{guildId}/leveling-config:
+    get:
+      operationId: getLevelingConfig
+      tags: [leveling]
+      summary: Get the leveling configuration for a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Leveling configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelingConfig"
+    put:
+      operationId: updateLevelingConfig
+      tags: [leveling]
+      summary: Update the leveling configuration for a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LevelingConfigInput"
+      responses:
+        "200":
+          description: Updated leveling configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LevelingConfig"
+
+  /guilds/{guildId}/leaderboard:
+    get:
+      operationId: getLeaderboard
+      tags: [leveling]
+      summary: Get the XP leaderboard for a guild
+      parameters:
+        - name: guildId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+            enum: [text, voice]
+          description: "Which leaderboard: text (default) or voice"
+      responses:
+        "200":
+          description: Leaderboard entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LeaderboardEntry"
+
   /bot/invite:
     get:
       operationId: getBotInvite
@@ -584,6 +656,64 @@ components:
         - eventType
         - description
         - createdAt
+
+    LevelingConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        textXpMin:
+          type: integer
+        textXpMax:
+          type: integer
+        textXpCooldown:
+          type: integer
+        voiceXpPerMinute:
+          type: integer
+        levelupChannelId:
+          type: ["string", "null"]
+        levelupMessageEnabled:
+          type: boolean
+      required:
+        - guildId
+        - textXpMin
+        - textXpMax
+        - textXpCooldown
+        - voiceXpPerMinute
+        - levelupMessageEnabled
+
+    LevelingConfigInput:
+      type: object
+      properties:
+        textXpMin:
+          type: integer
+        textXpMax:
+          type: integer
+        textXpCooldown:
+          type: integer
+        voiceXpPerMinute:
+          type: integer
+        levelupChannelId:
+          type: ["string", "null"]
+        levelupMessageEnabled:
+          type: boolean
+
+    LeaderboardEntry:
+      type: object
+      properties:
+        userId:
+          type: string
+        xp:
+          type: integer
+        level:
+          type: integer
+        rank:
+          type: integer
+      required:
+        - userId
+        - xp
+        - level
+        - rank
 
     BotInvite:
       type: object

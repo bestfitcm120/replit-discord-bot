@@ -78,21 +78,14 @@ export default function ServerSettings() {
     query: { enabled: !!guildId && !!user, queryKey: getGetGuildConfigQueryKey(guildId) },
   });
 
-  // Text channels for log channel selectors
   const { data: textChannels = [] } = useListGuildChannels(guildId, {}, {
     query: { enabled: !!guildId && !!user, queryKey: getListGuildChannelsQueryKey(guildId, {}) },
-  });
-
-  // Voice channels for the creation voice channel selector
-  const { data: voiceChannels = [] } = useListGuildChannels(guildId, { type: 2 }, {
-    query: { enabled: !!guildId && !!user, queryKey: getListGuildChannelsQueryKey(guildId, { type: 2 }) },
   });
 
   const updateConfig = useUpdateGuildConfig();
 
   const [defaultChannel, setDefaultChannel] = useState<string | null>(null);
   const [logChannels, setLogChannels] = useState<Record<string, string | null>>({});
-  const [creationVoiceChannel, setCreationVoiceChannel] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => {
@@ -103,7 +96,6 @@ export default function ServerSettings() {
     if (config) {
       setDefaultChannel(config.defaultLogChannel ?? null);
       setLogChannels(config.logChannels as Record<string, string | null>);
-      setCreationVoiceChannel(config.creationVoiceChannel ?? null);
       setDirty(false);
     }
   }, [config]);
@@ -118,16 +110,11 @@ export default function ServerSettings() {
     setDirty(true);
   }
 
-  function setCreationVoice(value: string | null) {
-    setCreationVoiceChannel(value);
-    setDirty(true);
-  }
-
   async function handleSave() {
     try {
       await updateConfig.mutateAsync({
         guildId,
-        data: { defaultLogChannel: defaultChannel, logChannels, creationVoiceChannel },
+        data: { defaultLogChannel: defaultChannel, logChannels, creationVoiceChannel: config?.creationVoiceChannel ?? null },
       });
       queryClient.invalidateQueries({ queryKey: getGetGuildConfigQueryKey(guildId) });
       setDirty(false);
@@ -147,9 +134,9 @@ export default function ServerSettings() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Server Settings</h2>
+            <h2 className="text-xl font-bold text-foreground">Log Settings</h2>
             <p className="text-sm text-muted-foreground mt-1">
-              Configure log channels and bot features for this server.
+              Configure which channels receive event logs for this server.
             </p>
           </div>
           <button
@@ -167,58 +154,6 @@ export default function ServerSettings() {
           </div>
         ) : (
           <>
-            {/* ── Temporary Voice Channels ─────────────────────────────────── */}
-            <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 overflow-hidden">
-              <div className="px-5 py-3 border-b border-indigo-500/20 bg-indigo-500/10 flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-indigo-400">
-                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                </svg>
-                <span className="text-xs font-semibold text-indigo-300 uppercase tracking-wider">
-                  Temporary Voice Channels
-                </span>
-              </div>
-
-              <div className="p-5 space-y-4">
-                <p className="text-sm text-muted-foreground">
-                  When a member joins the creation channel, the bot instantly creates a private
-                  voice channel for them (inheriting all Discord permissions you've set), grants
-                  the member full control over it, then auto-deletes it when everyone leaves.
-                </p>
-
-                <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <div>
-                    <div className="font-medium text-sm text-foreground">Creation Voice Channel</div>
-                    <div className="text-xs text-muted-foreground mt-0.5">
-                      Joining this channel triggers temp channel creation.
-                      Set permissions on it in Discord to control who can use the feature.
-                    </div>
-                  </div>
-                  <ChannelSelect
-                    value={creationVoiceChannel}
-                    onChange={setCreationVoice}
-                    channels={voiceChannels}
-                    placeholder="Disabled — pick a voice channel"
-                    prefix="🔊 "
-                  />
-                </div>
-
-                {creationVoiceChannel && (
-                  <div className="rounded-lg bg-indigo-500/10 border border-indigo-500/20 px-4 py-3 text-xs text-indigo-300 space-y-1">
-                    <p className="font-semibold">How it works</p>
-                    <ul className="list-disc list-inside space-y-0.5 text-indigo-300/80">
-                      <li>Member joins the selected voice channel</li>
-                      <li>Bot creates <code>⌛ {"<"}member name{">"}</code> in the same category, copying all permission overwrites</li>
-                      <li>Member is moved to their new channel and gets full control</li>
-                      <li>Channel is deleted automatically when the last person leaves</li>
-                    </ul>
-                    <p className="text-indigo-300/60 pt-1">
-                      Tip: Set "Connect" permission on the creation channel in Discord to control which roles can use this feature.
-                    </p>
-                  </div>
-                )}
-              </div>
-            </div>
-
             {/* ── Default log channel ──────────────────────────────────────── */}
             <div className="p-5 rounded-xl border border-primary/30 bg-primary/5">
               <div className="flex items-center justify-between gap-4">

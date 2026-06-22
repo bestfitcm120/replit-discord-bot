@@ -315,6 +315,71 @@ export const ListUserWarningsResponse = zod.array(ListUserWarningsResponseItem)
 
 
 /**
+ * @summary Get the leveling configuration for a guild
+ */
+export const GetLevelingConfigParams = zod.object({
+  "guildId": zod.coerce.string()
+})
+
+export const GetLevelingConfigResponse = zod.object({
+  "guildId": zod.string(),
+  "textXpMin": zod.number(),
+  "textXpMax": zod.number(),
+  "textXpCooldown": zod.number(),
+  "voiceXpPerMinute": zod.number(),
+  "levelupChannelId": zod.string().nullish(),
+  "levelupMessageEnabled": zod.boolean()
+})
+
+
+/**
+ * @summary Update the leveling configuration for a guild
+ */
+export const UpdateLevelingConfigParams = zod.object({
+  "guildId": zod.coerce.string()
+})
+
+export const UpdateLevelingConfigBody = zod.object({
+  "textXpMin": zod.number().optional(),
+  "textXpMax": zod.number().optional(),
+  "textXpCooldown": zod.number().optional(),
+  "voiceXpPerMinute": zod.number().optional(),
+  "levelupChannelId": zod.string().nullish(),
+  "levelupMessageEnabled": zod.boolean().optional()
+})
+
+export const UpdateLevelingConfigResponse = zod.object({
+  "guildId": zod.string(),
+  "textXpMin": zod.number(),
+  "textXpMax": zod.number(),
+  "textXpCooldown": zod.number(),
+  "voiceXpPerMinute": zod.number(),
+  "levelupChannelId": zod.string().nullish(),
+  "levelupMessageEnabled": zod.boolean()
+})
+
+
+/**
+ * @summary Get the XP leaderboard for a guild
+ */
+export const GetLeaderboardParams = zod.object({
+  "guildId": zod.coerce.string()
+})
+
+export const GetLeaderboardQueryParams = zod.object({
+  "category": zod.enum(['text', 'voice']).optional().describe('Which leaderboard: text (default) or voice')
+})
+
+export const GetLeaderboardResponseItem = zod.object({
+  "userId": zod.string(),
+  "xp": zod.number(),
+  "level": zod.number(),
+  "rank": zod.number()
+})
+export const GetLeaderboardResponse = zod.array(GetLeaderboardResponseItem)
+
+
+/**
  * @summary Get the bot invite URL
  */
 export const GetBotInviteResponse = zod.object({

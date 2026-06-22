@@ -24,12 +24,16 @@ import type {
   BotInvite,
   Channel,
   ErrorResponse,
+  GetLeaderboardParams,
   Guild,
   GuildConfig,
   GuildConfigInput,
   GuildDetail,
   GuildStats,
   HealthStatus,
+  LeaderboardEntry,
+  LevelingConfig,
+  LevelingConfigInput,
   ListGuildChannelsParams,
   ListGuildModerationParams,
   LogEntry,
@@ -1133,6 +1137,244 @@ export function useListUserWarnings<TData = Awaited<ReturnType<typeof listUserWa
  ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
 
   const queryOptions = getListUserWarningsQueryOptions(guildId,userId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getGetLevelingConfigUrl = (guildId: string,) => {
+
+
+
+
+  return `/api/guilds/${guildId}/leveling-config`
+}
+
+/**
+ * @summary Get the leveling configuration for a guild
+ */
+export const getLevelingConfig = async (guildId: string, options?: RequestInit): Promise<LevelingConfig> => {
+
+  return customFetch<LevelingConfig>(getGetLevelingConfigUrl(guildId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLevelingConfigQueryKey = (guildId: string,) => {
+    return [
+    `/api/guilds/${guildId}/leveling-config`
+    ] as const;
+    }
+
+
+export const getGetLevelingConfigQueryOptions = <TData = Awaited<ReturnType<typeof getLevelingConfig>>, TError = ErrorType<unknown>>(guildId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLevelingConfig>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLevelingConfigQueryKey(guildId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLevelingConfig>>> = ({ signal }) => getLevelingConfig(guildId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(guildId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLevelingConfig>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLevelingConfigQueryResult = NonNullable<Awaited<ReturnType<typeof getLevelingConfig>>>
+export type GetLevelingConfigQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the leveling configuration for a guild
+ */
+
+export function useGetLevelingConfig<TData = Awaited<ReturnType<typeof getLevelingConfig>>, TError = ErrorType<unknown>>(
+ guildId: string, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLevelingConfig>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLevelingConfigQueryOptions(guildId,options)
+
+  const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+
+
+
+
+
+
+export const getUpdateLevelingConfigUrl = (guildId: string,) => {
+
+
+
+
+  return `/api/guilds/${guildId}/leveling-config`
+}
+
+/**
+ * @summary Update the leveling configuration for a guild
+ */
+export const updateLevelingConfig = async (guildId: string,
+    levelingConfigInput: LevelingConfigInput, options?: RequestInit): Promise<LevelingConfig> => {
+
+  return customFetch<LevelingConfig>(getUpdateLevelingConfigUrl(guildId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      levelingConfigInput,)
+  }
+);}
+
+
+
+
+export const getUpdateLevelingConfigMutationOptions = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLevelingConfig>>, TError,{guildId: string;data: BodyType<LevelingConfigInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof updateLevelingConfig>>, TError,{guildId: string;data: BodyType<LevelingConfigInput>}, TContext> => {
+
+const mutationKey = ['updateLevelingConfig'];
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateLevelingConfig>>, {guildId: string;data: BodyType<LevelingConfigInput>}> = (props) => {
+          const {guildId,data} = props ?? {};
+
+          return  updateLevelingConfig(guildId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateLevelingConfigMutationResult = NonNullable<Awaited<ReturnType<typeof updateLevelingConfig>>>
+    export type UpdateLevelingConfigMutationBody = BodyType<LevelingConfigInput>
+    export type UpdateLevelingConfigMutationError = ErrorType<unknown>
+
+    /**
+ * @summary Update the leveling configuration for a guild
+ */
+export const useUpdateLevelingConfig = <TError = ErrorType<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateLevelingConfig>>, TError,{guildId: string;data: BodyType<LevelingConfigInput>}, TContext>, request?: SecondParameter<typeof customFetch>}
+ ): UseMutationResult<
+        Awaited<ReturnType<typeof updateLevelingConfig>>,
+        TError,
+        {guildId: string;data: BodyType<LevelingConfigInput>},
+        TContext
+      > => {
+      return useMutation(getUpdateLevelingConfigMutationOptions(options));
+    }
+
+export const getGetLeaderboardUrl = (guildId: string,
+    params?: GetLeaderboardParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : value.toString())
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/api/guilds/${guildId}/leaderboard?${stringifiedParams}` : `/api/guilds/${guildId}/leaderboard`
+}
+
+/**
+ * @summary Get the XP leaderboard for a guild
+ */
+export const getLeaderboard = async (guildId: string,
+    params?: GetLeaderboardParams, options?: RequestInit): Promise<LeaderboardEntry[]> => {
+
+  return customFetch<LeaderboardEntry[]>(getGetLeaderboardUrl(guildId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetLeaderboardQueryKey = (guildId: string,
+    params?: GetLeaderboardParams,) => {
+    return [
+    `/api/guilds/${guildId}/leaderboard`, ...(params ? [params] : [])
+    ] as const;
+    }
+
+
+export const getGetLeaderboardQueryOptions = <TData = Awaited<ReturnType<typeof getLeaderboard>>, TError = ErrorType<unknown>>(guildId: string,
+    params?: GetLeaderboardParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLeaderboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetLeaderboardQueryKey(guildId,params);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getLeaderboard>>> = ({ signal }) => getLeaderboard(guildId,params, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: !!(guildId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getLeaderboard>>, TError, TData> & { queryKey: QueryKey }
+}
+
+export type GetLeaderboardQueryResult = NonNullable<Awaited<ReturnType<typeof getLeaderboard>>>
+export type GetLeaderboardQueryError = ErrorType<unknown>
+
+
+/**
+ * @summary Get the XP leaderboard for a guild
+ */
+
+export function useGetLeaderboard<TData = Awaited<ReturnType<typeof getLeaderboard>>, TError = ErrorType<unknown>>(
+ guildId: string,
+    params?: GetLeaderboardParams, options?: { query?:UseQueryOptions<Awaited<ReturnType<typeof getLeaderboard>>, TError, TData>, request?: SecondParameter<typeof customFetch>}
+
+ ):  UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+
+  const queryOptions = getGetLeaderboardQueryOptions(guildId,params,options)
 
   const query = useQuery(queryOptions) as  UseQueryResult<TData, TError> & { queryKey: QueryKey };
 

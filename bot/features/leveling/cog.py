@@ -239,49 +239,42 @@ class LevelingCog(commands.Cog, name="Leveling"):
 
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="top", description="Show the XP leaderboard for this server.")
-    @app_commands.describe(category="Which leaderboard to show: text or voice")
-    @app_commands.choices(category=[
-        app_commands.Choice(name="Text", value="text"),
-        app_commands.Choice(name="Voice", value="voice"),
-    ])
-    async def top_command(
-        self,
-        interaction: discord.Interaction,
-        category: app_commands.Choice[str] = None,
-    ) -> None:
+    @app_commands.command(name="top", description="Show the top 5 text and voice chatters in this server.")
+    async def top_command(self, interaction: discord.Interaction) -> None:
         guild = interaction.guild
         guild_id = str(guild.id)
-        cat = category.value if category else "text"
 
-        if cat == "text":
-            rows = await get_text_leaderboard(self.pool, guild_id, limit=10)
-            title = "💬 Text XP Leaderboard"
-            xp_key = "text_xp"
-            level_key = "text_level"
-        else:
-            rows = await get_voice_leaderboard(self.pool, guild_id, limit=10)
-            title = "🔊 Voice XP Leaderboard"
-            xp_key = "voice_xp"
-            level_key = "voice_level"
+        text_rows = await get_text_leaderboard(self.pool, guild_id, limit=5)
+        voice_rows = await get_voice_leaderboard(self.pool, guild_id, limit=5)
 
-        embed = discord.Embed(title=title, color=discord.Color.gold())
+        medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
 
-        if not rows:
-            embed.description = "No XP data yet. Start chatting or join a voice channel!"
-        else:
+        def format_rows(rows: list, xp_key: str, level_key: str) -> str:
+            if not rows:
+                return "*No data yet.*"
             lines = []
-            medals = ["🥇", "🥈", "🥉"]
             for i, row in enumerate(rows):
-                medal = medals[i] if i < 3 else f"**#{i + 1}**"
+                medal = medals[i] if i < len(medals) else f"**#{i + 1}**"
                 member = guild.get_member(int(row["user_id"]))
                 name = member.display_name if member else f"<@{row['user_id']}>"
-                lines.append(
-                    f"{medal} {name} — Level **{row[level_key]}** ({row[xp_key]:,} XP)"
-                )
-            embed.description = "\n".join(lines)
+                lines.append(f"{medal} {name}\nLvl **{row[level_key]}** • {row[xp_key]:,} XP")
+            return "\n".join(lines)
 
-        embed.set_footer(text=guild.name, icon_url=guild.icon.url if guild.icon else None)
+        embed = discord.Embed(
+            title=f"🏆 {guild.name} Leaderboard",
+            color=discord.Color.gold(),
+        )
+        embed.add_field(
+            name="💬 Top Text Chatters",
+            value=format_rows(text_rows, "text_xp", "text_level"),
+            inline=True,
+        )
+        embed.add_field(
+            name="🔊 Top Voice Members",
+            value=format_rows(voice_rows, "voice_xp", "voice_level"),
+            inline=True,
+        )
+        embed.set_footer(text="Use /rank to see your own stats")
         embed.timestamp = discord.utils.utcnow()
 
         await interaction.response.send_message(embed=embed)

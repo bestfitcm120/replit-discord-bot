@@ -216,6 +216,36 @@ async def list_guild_moderation(guild_id: str, request: Request, userId: Optiona
             list(moderation_event_types),
         )
 
+    import asyncio as _asyncio
+
+    ids_to_resolve: set = set()
+    for r in rows:
+        if r["user_id"]:
+            ids_to_resolve.add(r["user_id"])
+        if r["target_id"]:
+            ids_to_resolve.add(r["target_id"])
+
+    user_cache: dict = {}
+    if ids_to_resolve:
+        fetched = await _asyncio.gather(*[_fetch_discord_user(uid) for uid in ids_to_resolve])
+        for u in fetched:
+            if u:
+                user_cache[u["id"]] = u
+
+    def _display(uid: Optional[str]) -> Optional[str]:
+        if not uid:
+            return None
+        u = user_cache.get(uid)
+        return (u.get("global_name") or u.get("username")) if u else None
+
+    def _avatar(uid: Optional[str]) -> Optional[str]:
+        if not uid:
+            return None
+        u = user_cache.get(uid)
+        if not u or not u.get("avatar"):
+            return None
+        return f"https://cdn.discordapp.com/avatars/{u['id']}/{u['avatar']}.png?size=64"
+
     return [
         {
             "id": r["id"],
@@ -223,6 +253,9 @@ async def list_guild_moderation(guild_id: str, request: Request, userId: Optiona
             "eventType": r["event_type"],
             "userId": r["user_id"],
             "targetId": r["target_id"],
+            "targetDisplayName": _display(r["target_id"]),
+            "targetAvatarUrl": _avatar(r["target_id"]),
+            "actorDisplayName": _display(r["user_id"]),
             "description": r["description"],
             "metadata": r["metadata"],
             "createdAt": r["created_at"].isoformat(),

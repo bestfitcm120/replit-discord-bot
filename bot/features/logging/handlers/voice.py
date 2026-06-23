@@ -24,6 +24,11 @@ class VoiceEventHandlers:
                 max_age=5.0,
             )
 
+            # Skip moves initiated by the bot itself — these are temp-VC system moves
+            # (e.g. moving a member from the creation channel into their new temp VC).
+            if executor and executor.id == guild.me.id:
+                return results
+
             if executor and executor.id != member.id:
                 description = (
                     f"{member.mention} was moved from **{before.channel.name}** to **{after.channel.name}** "

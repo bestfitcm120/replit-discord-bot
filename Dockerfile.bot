@@ -16,10 +16,12 @@ FROM python:3.12-slim AS base
 
 WORKDIR /app
 
-# Install system deps (gcc needed for some asyncpg wheels)
+# Install system deps (gcc needed for asyncpg wheels; libjpeg/zlib for Pillow)
 RUN apt-get update && apt-get install -y --no-install-recommends \
         gcc \
         libpq-dev \
+        libjpeg62-turbo \
+        zlib1g \
     && rm -rf /var/lib/apt/lists/*
 
 # ── Stage 2: dependencies ─────────────────────────────────────────────────────
@@ -33,6 +35,12 @@ FROM python:3.12-slim AS final
 
 WORKDIR /app
 
+# Runtime libs needed by Pillow
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libjpeg62-turbo \
+        zlib1g \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy installed packages from deps stage
 COPY --from=deps /usr/local/lib/python3.12 /usr/local/lib/python3.12
 COPY --from=deps /usr/local/bin /usr/local/bin
@@ -44,8 +52,12 @@ COPY bot/ /app/bot/
 RUN groupadd -r botuser && useradd -r -g botuser botuser
 USER botuser
 
-# Health check — verifies the process is running
-HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
-    CMD pgrep -f "python -m bot.main" || exit 1
+# Health check — the bot writes /tmp/healthy every 30 s while running.
+# We verify the file exists and was updated within the last 90 seconds.
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD python3 -c "\
+import os, time; \
+f='/tmp/healthy'; \
+exit(0 if os.path.exists(f) and (time.time() - os.path.getmtime(f)) < 90 else 1)"
 
 CMD ["python", "-m", "bot.main"]

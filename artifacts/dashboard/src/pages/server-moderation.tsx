@@ -196,7 +196,18 @@ export default function ServerModeration() {
                       </td>
                       <td className="px-4 py-3">
                         {entry.targetId ? (
-                          <code className="text-xs font-mono text-foreground/80">{entry.targetId}</code>
+                          <div className="flex items-center gap-2">
+                            {entry.targetAvatarUrl ? (
+                              <img src={entry.targetAvatarUrl} alt="" className="w-7 h-7 rounded-full flex-shrink-0" />
+                            ) : (
+                              <div className="w-7 h-7 rounded-full bg-secondary border border-border flex-shrink-0 flex items-center justify-center text-xs text-muted-foreground">
+                                {(entry.targetDisplayName ?? entry.targetId).slice(0, 1).toUpperCase()}
+                              </div>
+                            )}
+                            <span className="text-sm text-foreground">
+                              {entry.targetDisplayName ?? entry.targetId}
+                            </span>
+                          </div>
                         ) : (
                           <span className="text-muted-foreground">—</span>
                         )}

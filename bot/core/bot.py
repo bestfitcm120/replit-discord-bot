@@ -1,3 +1,4 @@
+import asyncio
 import discord
 from discord.ext import commands
 import logging
@@ -6,6 +7,8 @@ import os
 from bot.core.config import BotConfig
 
 logger = logging.getLogger(__name__)
+
+HEALTHY_FILE = "/tmp/healthy"
 
 
 class ModerationBot(commands.Bot):
@@ -27,8 +30,7 @@ class ModerationBot(commands.Bot):
 
     async def setup_hook(self) -> None:
         await self._load_features()
-        await self.tree.sync()
-        logger.info("Bot setup complete, commands synced.")
+        logger.info("Bot setup complete — guild-specific command sync will run on_ready.")
 
     async def _load_features(self) -> None:
         extensions = [
@@ -52,6 +54,9 @@ class ModerationBot(commands.Bot):
                 name=f"{len(self.guilds)} servers",
             )
         )
+        # Sync commands as guild-specific so they appear instantly (no global propagation delay).
+        # We do NOT call tree.sync() globally — that would create duplicate commands alongside
+        # the guild-specific ones already registered via copy_global_to.
         for guild in self.guilds:
             try:
                 self.tree.copy_global_to(guild=guild)
@@ -59,6 +64,23 @@ class ModerationBot(commands.Bot):
                 logger.info(f"Synced commands to guild: {guild.name} ({guild.id})")
             except Exception as e:
                 logger.warning(f"Failed to sync commands to guild {guild.id}: {e}")
+
+        # Write initial heartbeat then start background refresh
+        self._write_heartbeat()
+        self.loop.create_task(self._heartbeat_loop())
+
+    def _write_heartbeat(self) -> None:
+        try:
+            with open(HEALTHY_FILE, "w") as f:
+                f.write("ok")
+        except Exception:
+            pass
+
+    async def _heartbeat_loop(self) -> None:
+        """Refresh the health file every 30 s so Docker knows the bot is alive."""
+        while not self.is_closed():
+            await asyncio.sleep(30)
+            self._write_heartbeat()
 
     async def on_guild_join(self, guild: discord.Guild) -> None:
         logger.info(f"Joined guild: {guild.name} (ID: {guild.id})")

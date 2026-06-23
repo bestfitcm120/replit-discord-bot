@@ -154,6 +154,9 @@ export interface LogEntry {
   userId?: string | null;
   /** @nullable */
   targetId?: string | null;
+  targetDisplayName?: string | null;
+  targetAvatarUrl?: string | null;
+  actorDisplayName?: string | null;
   description: string;
   metadata?: LogEntryMetadata;
   createdAt: string;

@@ -644,6 +644,15 @@ components:
           type: ["string", "null"]
         targetId:
           type: ["string", "null"]
+        targetDisplayName:
+          type: string
+          nullable: true
+        targetAvatarUrl:
+          type: string
+          nullable: true
+        actorDisplayName:
+          type: string
+          nullable: true
         description:
           type: string
         metadata:

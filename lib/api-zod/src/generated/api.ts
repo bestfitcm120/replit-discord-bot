@@ -256,6 +256,9 @@ export const ListGuildLogsResponseItem = zod.object({
   "eventType": zod.string(),
   "userId": zod.string().nullish(),
   "targetId": zod.string().nullish(),
+  "targetDisplayName": zod.string().nullish(),
+  "targetAvatarUrl": zod.string().nullish(),
+  "actorDisplayName": zod.string().nullish(),
   "description": zod.string(),
   "metadata": zod.object({
 
@@ -282,6 +285,9 @@ export const ListGuildModerationResponseItem = zod.object({
   "eventType": zod.string(),
   "userId": zod.string().nullish(),
   "targetId": zod.string().nullish(),
+  "targetDisplayName": zod.string().nullish(),
+  "targetAvatarUrl": zod.string().nullish(),
+  "actorDisplayName": zod.string().nullish(),
   "description": zod.string(),
   "metadata": zod.object({
 
@@ -305,6 +311,9 @@ export const ListUserWarningsResponseItem = zod.object({
   "eventType": zod.string(),
   "userId": zod.string().nullish(),
   "targetId": zod.string().nullish(),
+  "targetDisplayName": zod.string().nullish(),
+  "targetAvatarUrl": zod.string().nullish(),
+  "actorDisplayName": zod.string().nullish(),
   "description": zod.string(),
   "metadata": zod.object({
 

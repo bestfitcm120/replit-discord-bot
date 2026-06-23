@@ -6,6 +6,7 @@ import random
 import datetime
 from typing import Optional
 
+from bot.utils.leaderboard_image import generate_top_image
 from bot.core.database import (
     get_pool,
     add_text_xp,
@@ -241,41 +242,24 @@ class LevelingCog(commands.Cog, name="Leveling"):
 
     @app_commands.command(name="top", description="Show the top 5 text and voice chatters in this server.")
     async def top_command(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer()
         guild = interaction.guild
         guild_id = str(guild.id)
 
         text_rows = await get_text_leaderboard(self.pool, guild_id, limit=5)
         voice_rows = await get_voice_leaderboard(self.pool, guild_id, limit=5)
 
-        medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
-
-        def format_rows(rows: list, xp_key: str, level_key: str) -> str:
-            if not rows:
-                return "*No data yet.*"
-            lines = []
-            for i, row in enumerate(rows):
-                medal = medals[i] if i < len(medals) else f"**#{i + 1}**"
-                lines.append(f"{medal} <@{row['user_id']}>\nLvl **{row[level_key]}** • {row[xp_key]:,} XP")
-            return "\n".join(lines)
+        file = await generate_top_image(guild, list(text_rows), list(voice_rows))
 
         embed = discord.Embed(
             title=f"🏆 {guild.name} Leaderboard",
             color=discord.Color.gold(),
         )
-        embed.add_field(
-            name="💬 Top Text Chatters",
-            value=format_rows(text_rows, "text_xp", "text_level"),
-            inline=True,
-        )
-        embed.add_field(
-            name="🔊 Top Voice Members",
-            value=format_rows(voice_rows, "voice_xp", "voice_level"),
-            inline=True,
-        )
+        embed.set_image(url="attachment://leaderboard.png")
         embed.set_footer(text="Use /rank to see your own stats")
         embed.timestamp = discord.utils.utcnow()
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed, file=file)
 
 
 async def setup(bot: commands.Bot) -> None:
